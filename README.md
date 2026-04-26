@@ -44,6 +44,13 @@ pip-install**:
 - Reading **Markdown / JSON** in a Windows editor is fine, but use **WSL** for executing the
   steps in this section.
 
+**Suggested order (checkpoint-based final evaluation, the usual “re-run the paper numbers”
+path):** **§1** Clone - **§2** venv and dependencies - **§3** raw datasets and `data/` CSVs -
+**§4** download and place Release checkpoints - **§5** `evaluate_final.py` - **§6** report
+notebook. **You cannot** run **§5** without **local** `.pt` files under `outputs/checkpoints/`
+(they are **not** in git). If you only need to **read** published results, use **Mode 1** below
+or jump to **§6** on saved JSON/PNGs.
+
 ### Three reproducibility modes (choose your path)
 
 This project can be used in **three** ways. Pick the one that matches your goal.
@@ -98,40 +105,15 @@ from retraining instead of loading these checkpoints, unless you accept small nu
 - **Raw** PlantVillage and PlantDoc in the **expected WSL** paths (see **§3** and **Storing
   data (WSL)**).
 - **Generated** `data/metadata/*.csv` and `data/splits/*.csv` (from **§3** or a matching build).
-- The **final** checkpoint **`.pt` files** (obtained **separately** from the main git tree; names
-  must match what the evaluation code expects). After placement they must be:
+- The **final** checkpoint **`.pt` files** (obtained **separately** from the main git tree; see
+  **§4**). After placement they must be:
   - `outputs/checkpoints/baseline_cnn_best_run3.pt`
   - `outputs/checkpoints/resnet18_best.pt`
 
-**Download from GitHub Release (recommended)**
-
-For exact final-evaluation reproduction without retraining, download the release asset
-**`checkpoints.zip`** (model weights only - **it does not** include PlantVillage, PlantDoc, or
-other raw data) from:
-
-**[github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints)**
-
-Unzip `checkpoints.zip` on your machine. The archive may place the two files in a
-subfolder (e.g. `checkpoint_release/`). Then copy **both** `.pt` files into your clone’s
-`outputs/checkpoints/` using the file names above.
-
-**Place the checkpoints in the repo and run final evaluation** (from the project root; adjust
-paths to match where you unzipped):
-
-```bash
-cd /path/to/Plant-Disease-Classification
-mkdir -p outputs/checkpoints
-cp /path/to/your_unzipped/baseline_cnn_best_run3.pt outputs/checkpoints/
-cp /path/to/your_unzipped/resnet18_best.pt outputs/checkpoints/
-ls -lh outputs/checkpoints
-source "$HOME/.venvs/plant-disease-classification/bin/activate"   # or your venv
-python src/training/evaluate_final.py
-```
-
-(If your unzip layout matches the project’s packaging, `cp` from `.../checkpoint_release/` is
-also fine. Adjust `cd`, venv, and `cp` source paths. **Protocol:** PlantDoc is used **only** in
-this final evaluation pass for external metrics - **not** for training or hyperparameter
-selection; see **Dataset roles**.)
+**GitHub Release (recommended source for those files):** download **`checkpoints.zip`** from
+**[v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints)**
+(weights only - **not** raw datasets). Unzip and copy the `.pt` files as described in **§4**;
+then run **§5**.
 
 **Packaging checkpoints for submission (project owner / maintainer)**
 
@@ -305,10 +287,10 @@ The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (
    `src/data/dataloaders.py` to this clone’s path. The **`build_subset_metadata.py`** and
    **`split_data.py`** scripts resolve the repo root from the script file location; run them from
    the same clone after building datasets (see their docstrings).
-2. With the venv **activated**:
+2. With the venv **activated** (recommended: home venv from **§2**):
    ```bash
    cd /path/to/Plant-Disease-Classification/src/data
-   source ../../.venv/bin/activate
+   source "$HOME/.venvs/plant-disease-classification/bin/activate"
    python build_subset_metadata.py
    python split_data.py
    ```
@@ -316,19 +298,87 @@ The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (
    script’s module docstring if anything fails. Outputs land under `data/metadata/` and
    `data/splits/`.
 
-**Tracked results vs local checkpoints:** `outputs/results/*.json` and `outputs/figures/*.png`
-are **in git** for reading without training. **`outputs/checkpoints/*.pt` are not**; see
-**Three reproducibility modes** above (Modes 1-3).
+   If you created a **project-local** `.venv` under the repo instead (see **§2**), activate it
+   with `source ../../.venv/bin/activate` from `src/data/` (or `source .venv/bin/activate` from
+   the repo root).
 
-### 4. Report notebook (Jupyter; overlaps Mode 1)
+**Tracked results vs local checkpoints:** `outputs/results/*.json` and `outputs/figures/*.png`
+are **in git** for reading without training. **`outputs/checkpoints/*.pt` are not** in the
+clone; obtain them from the **Release** (**§4**) before **§5**.
+
+### 4. Download provided checkpoints and place them under `outputs/checkpoints/`
+
+Model **checkpoints** are **not** tracked in git: they are **large binary** weight files. The
+clone does **not** include them; you must add them locally for **§5**.
+
+For **exact** final-evaluation reproduction **without retraining**, download **`checkpoints.zip`**
+from the GitHub Release (asset is **weights only** - it does **not** include PlantVillage,
+PlantDoc, or other raw data):
+
+**[https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints)**
+
+Unzip it. Copy the two checkpoint files into **`outputs/checkpoints/`** with these exact names:
+
+- `outputs/checkpoints/baseline_cnn_best_run3.pt`
+- `outputs/checkpoints/resnet18_best.pt`
+
+```bash
+cd /path/to/Plant-Disease-Classification
+
+mkdir -p outputs/checkpoints
+
+# After downloading and unzipping checkpoints.zip:
+cp /path/to/checkpoint_release/baseline_cnn_best_run3.pt outputs/checkpoints/
+cp /path/to/checkpoint_release/resnet18_best.pt outputs/checkpoints/
+
+ls -lh outputs/checkpoints
+```
+
+If the zip extracts into a folder named **`checkpoint_release`**, use that path for the `cp`
+sources. If the `.pt` files land somewhere else, replace `/path/to/checkpoint_release` with the
+folder that actually contains the two files.
+
+### 5. Run final evaluation with checkpoints
+
+This step **requires all of the following** (see **§3** and **§4**):
+
+- **Raw** datasets in the **expected WSL** locations (PlantVillage + PlantDoc).
+- **Generated** `data/metadata/` and `data/splits/` CSVs.
+- **Checkpoint** files under **`outputs/checkpoints/`** with the names above. **Without** those
+  `.pt` files, `evaluate_final.py` cannot load the trained weights.
+
+It **does not retrain** the models. It loads the **fixed** checkpoints and evaluates the
+selected **BaselineCNN (run3)** and **ResNet-18** on **PlantVillage test** and **PlantDoc**.
+**Protocol:** **PlantDoc** is **final external** evaluation only here - it was **not** used for
+training or hyperparameter tuning.
+
+```bash
+cd /path/to/Plant-Disease-Classification
+source "$HOME/.venvs/plant-disease-classification/bin/activate"
+
+python src/training/evaluate_final.py
+```
+
+With matching data, paths, and checkpoints, headline **accuracy** figures should align
+approximately with:
+
+| Model | PlantVillage test acc (approx.) | PlantDoc acc (approx.) |
+| --- | ---: | ---: |
+| **BaselineCNN (run3)** | 0.9718 | 0.2330 |
+| **ResNet-18** | 0.9989 | 0.4000 |
+
+(See the **Final aggregate results** table later in this README and `outputs/results/*_final_eval.json`.)
+
+### 6. Report notebook (Jupyter)
 
 With the venv **activated** when you use live kernels, or with the right interpreter, open
 [notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb). You can
 re-run on **saved** JSON, figures, and `configs/`; cells that build DataLoaders **warn and
-skip** if split/metadata CSVs or images are missing. For a full **on-disk** final evaluation,
-use **Mode 2** and `evaluate_final.py`.
+skip** if split/metadata CSVs or images are missing. This **saved-results** path does **not**
+require checkpoints for browsing tables from tracked files; a **full** on-disk re-evaluation
+follows **§4**-**§5**.
 
-### 5. Protocol note
+### 7. Protocol note
 
 **Unchanged protocol:** **PlantVillage validation** is the **only** basis for Baseline
 tuning/selection. **ResNet-18** used fixed initial settings. **PlantDoc** is for **final
@@ -408,23 +458,25 @@ PlantVillage test scores with guaranteed field reliability.
 
 ## How to run final evaluation (no training)
 
-This is **Mode 2** in **Three reproducibility modes** (checkpoint-based final evaluation). You
-need local **checkpoints**, **raw** images in the expected WSL paths, and built **`data/`
-CSVs** - see that section and **Storing data (WSL)**.
+The **primary** walkthrough is **§4** (place checkpoints) and **§5** (run
+`src/training/evaluate_final.py` with the venv and paths above). This matches **Mode 2** in
+**Three reproducibility modes**. You need **all** of: local **`.pt`** files under
+`outputs/checkpoints/`, **raw** images, and **`data/`** CSVs - **not** the checkpoints table alone.
 
-From **WSL2 Ubuntu** (Bash), at the **repository root** (adjust `/mnt/c/Users/...` to match
-your user). **Activate the venv first** if you use one (see **Reproducibility** above):
+Copy-paste example (WSL, adjust `cd` and venv; use a **local** `source .venv/bin/activate` only
+if you use a project-local venv from **§2**):
 
 ```bash
 cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
-source .venv/bin/activate
+source "$HOME/.venvs/plant-disease-classification/bin/activate"
 python src/training/evaluate_final.py
 ```
 
 This loads the **final** checkpoints, evaluates on **PlantVillage test** and **PlantDoc**,
 writes JSON and confusion-matrix figures under `outputs/`. It does **not** train or change
 weights. **Protocol:** PlantDoc is **only** used here as the external eval set, **not** for
-tuning.
+tuning. **Checkpoints** are **not** in git; you must have placed them from the **Release** or
+from training.
 
 ---
 
@@ -437,12 +489,13 @@ only** - **not** PlantDoc.
 
 ```bash
 cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
-source .venv/bin/activate
+source "$HOME/.venvs/plant-disease-classification/bin/activate"
 python src/training/train_baseline.py
 python src/training/train_resnet18.py
 ```
 
-Requires the same WSL paths for datasets, an **activated** venv (or equivalent) with
+(Use `source .venv/bin/activate` from the repo root if you use a project-local **`.venv`** as in
+**§2**.) Requires the same WSL paths for datasets, an **activated** venv (or equivalent) with
 PyTorch installed, etc. For exact headline numbers, prefer **Mode 2** (checkpoint
 evaluation) after obtaining or generating the final `.pt` files.
 
