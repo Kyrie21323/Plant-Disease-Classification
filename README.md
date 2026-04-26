@@ -155,6 +155,12 @@ FINAL_ANALYSIS.md      # Step 15 final report (figures + interpretation)
 
 ---
 
+## Dataset citations and licenses
+
+This project uses PlantVillage and PlantDoc. Please see [DATASET_LICENSES.md](DATASET_LICENSES.md) for dataset citations, license notes, and attribution.
+
+---
+
 ## Citation / academic use
 
 If you use this work, cite the **datasets** (PlantVillage, PlantDoc) and describe the
