@@ -75,21 +75,48 @@ contains `README.md` and `requirements.txt`).
 
 ### 2. Create a virtual environment, activate it, and install dependencies (recommended)
 
-Do this **in the same WSL session** you use for training and evaluation. Create the venv once
-from the repo root; **activate it in every new terminal** before running `python` or `pip` for
-this project:
+Do this **in the same WSL session** you use for training and evaluation. On **Ubuntu/Debian**,
+install the pieces that ship a working `venv`+`pip` **once** (names may be `python3.12-venv` on
+your distro):
+
+```bash
+sudo apt update
+sudo apt install -y python3-venv
+```
+
+**Put the venv on Linux’s ext4 home, not on `/mnt/c/`.** If your clone lives on a Windows
+drive (path like `/mnt/c/Users/...`), creating `python3 -m venv .venv` **inside** that tree can
+leave `pip` **half-broken** on NTFS (you may see `No module named 'pip._internal...'` and odd
+`pip` behavior). Safer pattern:
+
+```bash
+# One-time: venv in WSL home (ext4)
+python3 -m venv "$HOME/.venvs/plant-disease-classification"
+source "$HOME/.venvs/plant-disease-classification/bin/activate"
+```
+
+Then **`cd` to your project** (e.g. under `/mnt/c/...` or `~/...`) in the same shell. Your prompt
+should show the venv name when it is active. **Use only the venv’s `python` + `python -m
+pip`**, never a bare `pip`/`pip3` (that can hit **system** Python and trigger PEP 668
+“externally-managed-environment” on Ubuntu 24.04+).
+
+```bash
+cd /path/to/Plant-Disease-Classification
+# If you use the home venv, activate in every new terminal, then:
+source "$HOME/.venvs/plant-disease-classification/bin/activate"
+python -m pip install -U pip
+python -m pip install -r requirements.txt
+```
+
+**If the repo is already under `~` in WSL** (native ext4, not `/mnt/c/`), a project-local
+`.venv` is usually fine:
 
 ```bash
 cd /path/to/Plant-Disease-Classification
 python3 -m venv .venv
 source .venv/bin/activate
-```
-
-Your shell prompt should show `(.venv)` when the venv is active. Then install packages:
-
-```bash
 python -m pip install -U pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 `requirements.txt` pulls in `torch` and `torchvision`. If you need a **CPU-only** or
@@ -97,6 +124,10 @@ pip install -r requirements.txt
 [pytorch.org](https://pytorch.org) in **this** environment, then keep using the same
 activated venv for all commands below. Jupyter (for the report notebook) is included in
 `requirements.txt` once installed.
+
+**If `pip` still errors:** delete the broken venv folder, confirm `apt install python3-venv`
+succeeded, recreate the venv on **`$HOME/.venvs/...`**, and run **`python -m pip`** (not
+`pip3` without the venv active).
 
 ### 3. Download raw image datasets, place them in WSL, and build `data/` CSVs
 
