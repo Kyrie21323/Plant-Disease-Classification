@@ -31,7 +31,14 @@ notebook removed).
 or **inspect** the work without overclaiming. The following are now covered in **README §
 Reproducibility / running the project**:
 
-- [x] **Install dependencies** - `pip install -r requirements.txt` from repo root.
+- [x] **Where to run (WSL2 Ubuntu + Bash)** and **venv** - README requires Linux/WSL for
+  scripts, `python3 -m venv .venv` / `source .venv/bin/activate` before `pip` / `python`, with
+  optional PyTorch install note; evaluation/training blocks include `source .venv`.
+- [x] **Install dependencies** - `pip install -r requirements.txt` after venv is active, from
+  repo root in WSL.
+- [x] **Download / layout / metadata pipeline** - README §3: official GitHub links for
+  PlantVillage and PlantDoc, target `~/...` tree, `build_subset_metadata.py` and `split_data.py`
+  from `src/data/`, and pointers to `DATASET_LICENSES` / `PROJECT_PLAN` / class-subset docs.
 - [x] **Expected dataset locations** - PlantVillage `~/plantvillage/plantvillage_dataset/color`,
   PlantDoc `~/plantdoc/train`, with pointer to adjust `dataloaders.py` and `DATASET_LICENSES.md`.
 - [x] **Raw datasets not in repo** - stated explicitly.

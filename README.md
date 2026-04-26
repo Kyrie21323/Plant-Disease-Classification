@@ -28,59 +28,163 @@ specific spurious cue for every error.
 
 ## Reproducibility / running the project
 
-1. **Install dependencies** (from the repository root, in a Python 3 environment with a suitable
-   PyTorch install for your machine):
+### Run everything in WSL2 Ubuntu (or another Linux), not in Windows PowerShell
 
+This project was developed and run in **WSL2 with Ubuntu** on Windows, with Python and the
+image datasets on the **Linux** side. You should do the same for **training, evaluation, and
+pip-install**:
+
+- All command lines below are **Bash** for **WSL2 Ubuntu** (or native Linux), not `cmd` or
+  PowerShell.
+- Open **Ubuntu** (or your WSL distro) from the Start menu, or run `wsl` from a Windows
+  terminal, then work only in that environment for `python`, `pip`, and the scripts.
+- The paths in `src/data/dataloaders.py` and the **Storing data (WSL)** table assume **Linux**
+  paths. PlantDoc in particular is easier on the WSL ext4 filesystem; see that section for NTFS
+  filename limits.
+- Reading **Markdown / JSON** in a Windows editor is fine, but use **WSL** for executing the
+  steps in this section.
+
+### 1. `cd` to the repository in WSL
+
+If the project lives under your Windows `C:` drive, the mount is usually `/mnt/c/...`:
+
+```bash
+cd /mnt/c/Users/YourName/Documents/GitHub/Plant-Disease-Classification
+```
+
+If you cloned the repo into your WSL home instead, the path is something like
+`~/Documents/Plant-Disease-Classification` - adjust to match your layout.
+
+### 2. Create a virtual environment, activate it, and install dependencies (recommended)
+
+Do this **in the same WSL session** you use for training and evaluation. Create the venv once
+from the repo root; **activate it in every new terminal** before running `python` or `pip` for
+this project:
+
+```bash
+cd /path/to/Plant-Disease-Classification
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Your shell prompt should show `(.venv)` when the venv is active. Then install packages:
+
+```bash
+python -m pip install -U pip
+pip install -r requirements.txt
+```
+
+`requirements.txt` pulls in `torch` and `torchvision`. If you need a **CPU-only** or
+**GPU-specific (CUDA)** build, follow the official **PyTorch** install selector at
+[pytorch.org](https://pytorch.org) in **this** environment, then keep using the same
+activated venv for all commands below. Jupyter (for the report notebook) is included in
+`requirements.txt` once installed.
+
+### 3. Download raw image datasets, place them in WSL, and build `data/` CSVs
+
+**Raw images are not in the repository.** You must **download** the corpora yourself, follow
+[DATASET_LICENSES.md](DATASET_LICENSES.md) for **citation and license** text, and keep files on
+the **WSL (Linux) filesystem** (see **Storing data (WSL)** for NTFS / filename issues).
+
+**Target layout** (Bash, under your WSL home):
+
+- **PlantVillage:** `~/plantvillage/plantvillage_dataset/color`
+- **PlantDoc:** `~/plantdoc/train`
+
+**Where to download**
+
+| Dataset | Project role | Upstream (official) |
+| --- | --- | --- |
+| **PlantVillage** | Training, val selection, in-domain test | [github.com/spMohanty/PlantVillage-Dataset](https://github.com/spMohanty/PlantVillage-Dataset) (Mohanty *et al.*, 2016) |
+| **PlantDoc** | Final external / shift evaluation only (not for tuning) | [github.com/pratikkayal/PlantDoc-Dataset](https://github.com/pratikkayal/PlantDoc-Dataset) (Singh *et al.*, 2020, CC BY 4.0) |
+
+**Suggested steps (WSL, illustrative)** - adjust paths to match what you unzipped:
+
+1. `mkdir -p ~/plantvillage ~/plantdoc`
+2. **PlantVillage:** from the upstream repo, **clone** or use **Code > Download ZIP** on GitHub.
+   Locate the `color` directory whose **immediate** subfolders are **per-class** folders (e.g.
+   `Tomato___Early_blight`). The archive layout can vary (extra folders like `raw/` or
+   `segmented/`). The code expects the **single** `color` level that directly contains those
+   classes. Create `~/plantvillage/plantvillage_dataset/` and **copy** or **symlink** that
+   `color` tree so that `ls ~/plantvillage/plantvillage_dataset/color` lists class
+   subdirectories.
+3. **PlantDoc:** from the upstream repo, clone or download ZIP, then make **training** images
+   available as `~/plantdoc/train` (per-class subfolders), e.g. with a symlink if the download
+   lives elsewhere: `ln -s /path/to/.../train ~/plantdoc/train`
+4. If you use different absolute paths, set `PLANTVILLAGE_DIR` / `PLANTDOC_DIR` in
+   `src/data/build_subset_metadata.py` and the matching settings in
+   `src/data/dataloaders.py` (and rebuild metadata/splits after any change).
+
+**“Data cleaning / prep” in this project (not manual image retouching)**
+
+The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (then the
+**70/15/15** PlantVillage split) are produced by the scripts below; see
+[docs/FINAL_CLASS_SUBSET.md](docs/FINAL_CLASS_SUBSET.md) and
+[docs/CLASS_MAPPING.md](docs/CLASS_MAPPING.md) for what was chosen and
+[docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the full order of operations.
+
+1. Set **`REPO_ROOT`** in `src/data/dataloaders.py`, `src/data/build_subset_metadata.py`, and
+   `src/data/split_data.py` to your real clone path if it is not already correct (these files
+   may still point at the author’s path).
+2. With the venv **activated**:
    ```bash
-   pip install -r requirements.txt
+   cd /path/to/Plant-Disease-Classification/src/data
+   source ../../.venv/bin/activate
+   python build_subset_metadata.py
+   python split_data.py
    ```
+   Run from **`src/data/`** so `data_utils` imports match the scripts’ module layout. Check each
+   script’s module docstring if anything fails. Outputs land under `data/metadata/` and
+   `data/splits/`.
 
-2. **Raw image datasets** are **not** included in this repository. Download **PlantVillage** and
-   **PlantDoc** from the original sources and follow
-   [DATASET_LICENSES.md](DATASET_LICENSES.md). The training/evaluation code expects typical
-   **WSL** paths as in the table under **Storing data (WSL)** below:
-   - **PlantVillage:** `~/plantvillage/plantvillage_dataset/color`
-   - **PlantDoc:** `~/plantdoc/train`  
-   If your paths differ, adjust the constants in `src/data/dataloaders.py` (and rebuild
-   `data/metadata/` and `data/splits/` if needed-see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)).
+### 4. Result JSONs and figure PNGs are in git
 
-3. **Result JSONs and figure PNGs** in `outputs/results/` and `outputs/figures/` are **versioned
-   in git** (see `.gitignore`) so you can read **final numbers** and static plots **without**
-   training and **without** local image folders.
+`outputs/results/*.json` and `outputs/figures/*.png` are **versioned** (see `.gitignore`) so
+you can read **final numbers** and static plots without training and without local image
+folders.
 
-4. **Model checkpoints** (`outputs/checkpoints/*.pt`) are **intentionally not** tracked. To
-   **re-run** `src/training/evaluate_final.py` on real data, you must have the final weight files
-   locally (e.g. produce them with `src/training/train_baseline.py` and
-   `src/training/train_resnet18.py`, or obtain copies from a zip/instructor if your course
-   requires that). The evaluation script **loads** those `.pt` files; it does **not** download
-   them for you.
+### 5. Checkpoints are not in git
 
-5. **Run final evaluation** (only after **checkpoints** and **dataset paths** are in place, from
-   the repo root-adjust the `cd` path to match your machine, e.g. WSL):
+`outputs/checkpoints/*.pt` is **intentionally not** tracked. To re-run
+`src/training/evaluate_final.py` on real data you need the final **weight files** locally
+(train with `src/training/train_baseline.py` and `src/training/train_resnet18.py`, or obtain
+`.pt` files from a zip or instructor if required). The script **loads** those weights; it does
+**not** download them.
 
-   ```bash
-   cd /path/to/Plant-Disease-Classification
-   python src/training/evaluate_final.py
-   ```
+### 6. Run final evaluation (after checkpoints and datasets are in place, venv **active**)
 
-6. **Report notebook:** open and run
-   [notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb). With
-   only a clone, you can execute it using **saved** JSON, figures, and `configs/`; cells that
-   build DataLoaders **warn and skip** if split/metadata CSVs or images are missing (see
-   notebook). That path does **not** replace full evaluation on disk.
+```bash
+cd /path/to/Plant-Disease-Classification
+source .venv/bin/activate
+python src/training/evaluate_final.py
+```
 
-7. **What you can do without raw images or local checkpoints:** Read this README and
-   [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), browse tracked **JSON** and **PNGs**, and use the
-   notebook in **saved-results** mode to review the same tables and figures.
+Skip the `source` line only if you are not using a venv. See also **How to run final
+evaluation** for a copy-paste WSL path example.
 
-8. **What actually requires** both **raw image folders** the loaders can read, **and** local
-   **`.pt` checkpoints** (and the usual `data/` CSV layout the project uses): **retraining** and a
-   **full** run of `evaluate_final.py` (it loads saved weights, scores real images, and writes
-   outputs under `outputs/`).
+### 7. Report notebook (Jupyter)
+
+With the venv **activated** install is complete; run Jupyter from the same environment, or open
+[notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb) in
+VS Code / Cursor with the `.venv` interpreter selected. You can re-run the notebook on **saved**
+JSON, figures, and `configs/`; cells that build DataLoaders **warn and skip** if split/metadata
+CSVs or images are missing. That is **not** a substitute for a full
+`evaluate_final.py` run on disk.
+
+### 8. What works without local images or checkpoints
+
+Read this README, [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), and browse tracked **JSON** and
+**PNGs**; use the notebook in **saved-results** mode to review the same tables and figures.
+
+### 9. What needs raw data and `.pt` checkpoints
+
+**Retraining** and a **full** `evaluate_final.py` run require **on-disk** images, the usual
+`data/` CSV layout, and local **checkpoints** (it loads saved weights, scores real images, and
+writes under `outputs/`).
 
 **Protocol (unchanged):** PlantVillage **validation** is the **only** basis for Baseline
-tuning/selection; **PlantDoc** is for **final external** evaluation only-not for tuning. See
-the table in **Dataset roles** below.
+tuning/selection; **PlantDoc** is for **final external** evaluation only - not for tuning. See
+**Dataset roles** below.
 
 ---
 
@@ -155,10 +259,12 @@ PlantVillage test scores with guaranteed field reliability.
 
 ## How to run final evaluation (no training)
 
-From WSL, at the **repository root** (adjust `/mnt/c/Users/...` to match your user):
+From **WSL2 Ubuntu** (Bash), at the **repository root** (adjust `/mnt/c/Users/...` to match
+your user). **Activate the venv first** if you use one (see **Reproducibility** above):
 
 ```bash
 cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+source .venv/bin/activate
 python src/training/evaluate_final.py
 ```
 
@@ -174,11 +280,13 @@ Tuning the Baseline uses numbered run outputs; see [FINAL_ANALYSIS.md](FINAL_ANA
 
 ```bash
 cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+source .venv/bin/activate
 python src/training/train_baseline.py
 python src/training/train_resnet18.py
 ```
 
-Requires the same WSL dataset paths, Python env with PyTorch, etc.
+Requires the same WSL paths for datasets, an **activated** venv (or equivalent) with
+PyTorch installed, etc.
 
 **Regenerating metadata / splits (historical / advanced):** if you need to rebuild CSVs, run
 the scripts from the repo in WSL with `PYTHONPATH` or `cd` to `src/data` as your workflow
