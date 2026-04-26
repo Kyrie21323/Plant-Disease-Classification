@@ -26,6 +26,64 @@ specific spurious cue for every error.
 
 ---
 
+## Reproducibility / running the project
+
+1. **Install dependencies** (from the repository root, in a Python 3 environment with a suitable
+   PyTorch install for your machine):
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Raw image datasets** are **not** included in this repository. Download **PlantVillage** and
+   **PlantDoc** from the original sources and follow
+   [DATASET_LICENSES.md](DATASET_LICENSES.md). The training/evaluation code expects typical
+   **WSL** paths as in the table under **Storing data (WSL)** below:
+   - **PlantVillage:** `~/plantvillage/plantvillage_dataset/color`
+   - **PlantDoc:** `~/plantdoc/train`  
+   If your paths differ, adjust the constants in `src/data/dataloaders.py` (and rebuild
+   `data/metadata/` and `data/splits/` if needed—see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)).
+
+3. **Result JSONs and figure PNGs** in `outputs/results/` and `outputs/figures/` are **versioned
+   in git** (see `.gitignore`) so you can read **final numbers** and static plots **without**
+   training and **without** local image folders.
+
+4. **Model checkpoints** (`outputs/checkpoints/*.pt`) are **intentionally not** tracked. To
+   **re-run** `src/training/evaluate_final.py` on real data, you must have the final weight files
+   locally (e.g. produce them with `src/training/train_baseline.py` and
+   `src/training/train_resnet18.py`, or obtain copies from a zip/instructor if your course
+   requires that). The evaluation script **loads** those `.pt` files; it does **not** download
+   them for you.
+
+5. **Run final evaluation** (only after **checkpoints** and **dataset paths** are in place, from
+   the repo root—adjust the `cd` path to match your machine, e.g. WSL):
+
+   ```bash
+   cd /path/to/Plant-Disease-Classification
+   python src/training/evaluate_final.py
+   ```
+
+6. **Report notebook:** open and run
+   [notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb). With
+   only a clone, you can execute it using **saved** JSON, figures, and `configs/`; cells that
+   build DataLoaders **warn and skip** if split/metadata CSVs or images are missing (see
+   notebook). That path does **not** replace full evaluation on disk.
+
+7. **What you can do without raw images or local checkpoints:** Read this README and
+   [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), browse tracked **JSON** and **PNGs**, and use the
+   notebook in **saved-results** mode to review the same tables and figures.
+
+8. **What actually requires** both **raw image folders** the loaders can read, **and** local
+   **`.pt` checkpoints** (and the usual `data/` CSV layout the project uses): **retraining** and a
+   **full** run of `evaluate_final.py` (it loads saved weights, scores real images, and writes
+   outputs under `outputs/`).
+
+**Protocol (unchanged):** PlantVillage **validation** is the **only** basis for Baseline
+tuning/selection; **PlantDoc** is for **final external** evaluation only—not for tuning. See
+the table in **Dataset roles** below.
+
+---
+
 ## Dataset roles (experimental protocol)
 
 | Data split / set | Use |
