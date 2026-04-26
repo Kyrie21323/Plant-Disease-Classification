@@ -76,7 +76,8 @@ from retraining instead of loading these checkpoints, unless you accept small nu
 - If a course or reviewer requires **bit-for-bit** final-evaluation reproduction, the **two**
   checkpoint files should be **provided separately** (e.g. a **zip** download, a **release
   asset**, an **LMS** attachment, or a **shared drive** link) - not committed to the default git
-  tree.
+  tree. **For this repository,** the **recommended** way to get those files is the **GitHub
+  Release** below (`checkpoints.zip` as a **release asset** - **not** the raw image datasets).
 
 **Why checkpoint-based final evaluation is the recommended way to “re-run the numbers”**
 
@@ -97,26 +98,40 @@ from retraining instead of loading these checkpoints, unless you accept small nu
 - **Raw** PlantVillage and PlantDoc in the **expected WSL** paths (see **§3** and **Storing
   data (WSL)**).
 - **Generated** `data/metadata/*.csv` and `data/splits/*.csv` (from **§3** or a matching build).
-- The **final** checkpoint files (obtained separately from the git repo; names must match what
-  the training/evaluation code expects), typically:
+- The **final** checkpoint **`.pt` files** (obtained **separately** from the main git tree; names
+  must match what the evaluation code expects). After placement they must be:
   - `outputs/checkpoints/baseline_cnn_best_run3.pt`
   - `outputs/checkpoints/resnet18_best.pt`
 
-**Place provided checkpoints** (if you unzipped a release into `/path/to/checkpoint_release`):
+**Download from GitHub Release (recommended)**
+
+For exact final-evaluation reproduction without retraining, download the release asset
+**`checkpoints.zip`** (model weights only - **it does not** include PlantVillage, PlantDoc, or
+other raw data) from:
+
+**[github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints)**
+
+Unzip `checkpoints.zip` on your machine. The archive may place the two files in a
+subfolder (e.g. `checkpoint_release/`). Then copy **both** `.pt` files into your clone’s
+`outputs/checkpoints/` using the file names above.
+
+**Place the checkpoints in the repo and run final evaluation** (from the project root; adjust
+paths to match where you unzipped):
 
 ```bash
 cd /path/to/Plant-Disease-Classification
 mkdir -p outputs/checkpoints
-cp /path/to/checkpoint_release/baseline_cnn_best_run3.pt outputs/checkpoints/
-cp /path/to/checkpoint_release/resnet18_best.pt outputs/checkpoints/
+cp /path/to/your_unzipped/baseline_cnn_best_run3.pt outputs/checkpoints/
+cp /path/to/your_unzipped/resnet18_best.pt outputs/checkpoints/
 ls -lh outputs/checkpoints
 source "$HOME/.venvs/plant-disease-classification/bin/activate"   # or your venv
 python src/training/evaluate_final.py
 ```
 
-(Adjust `cd`, venv, and `cp` source paths. **Protocol:** PlantDoc was used **only** for this
-**final** external pass - **not** for training or hyperparameter choice; see **Dataset
-roles**.)
+(If your unzip layout matches the project’s packaging, `cp` from `.../checkpoint_release/` is
+also fine. Adjust `cd`, venv, and `cp` source paths. **Protocol:** PlantDoc is used **only** in
+this final evaluation pass for external metrics - **not** for training or hyperparameter
+selection; see **Dataset roles**.)
 
 **Packaging checkpoints for submission (project owner / maintainer)**
 
@@ -133,9 +148,12 @@ zip -r checkpoints.zip checkpoint_release
 ls -lh checkpoints.zip
 ```
 
-- **Do not** add `checkpoints.zip` to git unless your instructor explicitly says to; upload it
-  **separately** when exact final-evaluation reproduction is required.
-- The zip should contain **only** the `.pt` files (or a single folder of them), **not** images.
+- **Do not** add `checkpoints.zip` to git unless your instructor explicitly says to; publish it
+  as a **GitHub Release asset** (this project uses
+  [v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints))
+  or upload **separately** when exact final-evaluation reproduction is required.
+- The zip should contain **only** the `.pt` files (or a single folder of them), **not** raw
+  datasets or images.
 
 #### Mode 3: Full training reproduction (retrain, then evaluate)
 
