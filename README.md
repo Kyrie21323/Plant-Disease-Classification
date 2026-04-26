@@ -268,35 +268,56 @@ data (WSL)** for NTFS / filename issues).
 | **PlantVillage** | Training, val selection, in-domain test | [github.com/spMohanty/PlantVillage-Dataset](https://github.com/spMohanty/PlantVillage-Dataset) (Mohanty *et al.*, 2016) |
 | **PlantDoc** | Final external / shift evaluation only (not for tuning) | [github.com/pratikkayal/PlantDoc-Dataset](https://github.com/pratikkayal/PlantDoc-Dataset) (Singh *et al.*, 2020, CC BY 4.0) |
 
-**Recommended automatic setup (WSL, copy-paste)** — The block below pulls **only** what is
-needed into the paths expected by `src/data/build_subset_metadata.py`. It uses **third-party**
-repositories; **compliance** (attribution, license, use) remains **your** responsibility under
-[DATASET_LICENSES.md](DATASET_LICENSES.md).
+**Recommended automatic setup (run in WSL or native Linux)** — **Git** is required (`apt
+install git`). **Subversion is not used.** Final layout expected by this project:
+
+- `~/plantvillage/plantvillage_dataset/color` — PlantVillage images (**only** the `raw/color`
+  tree is fetched via **`git sparse-checkout`**, not the full upstream repository).
+- `~/plantdoc/train` — PlantDoc training images (**normal** `git clone` of the upstream repo,
+  then a symlink).
+
+This repository **does not own or redistribute** either dataset; upstream is Mohanty *et al.*
+(PlantVillage) and Singh *et al.* (PlantDoc). You must follow
+[DATASET_LICENSES.md](DATASET_LICENSES.md) for citation and license. The blocks below call
+**third-party** GitHub projects; compliance remains **your** responsibility.
+
+**PlantVillage (sparse checkout — only `raw/color`)**
 
 ```bash
 cd ~
 
 sudo apt update
-sudo apt install -y git subversion
+sudo apt install -y git
 
-rm -rf ~/plantvillage ~/plantdoc
+rm -rf ~/plantvillage
+mkdir -p ~/plantvillage
+
+git clone --filter=blob:none --sparse https://github.com/spMohanty/PlantVillage-Dataset.git ~/plantvillage/PlantVillage-Dataset
+cd ~/plantvillage/PlantVillage-Dataset
+git sparse-checkout set raw/color
+
 mkdir -p ~/plantvillage/plantvillage_dataset
+ln -sfn ~/plantvillage/PlantVillage-Dataset/raw/color ~/plantvillage/plantvillage_dataset/color
+
+ls ~/plantvillage/plantvillage_dataset/color | head
+```
+
+**PlantDoc (full clone + symlink to `train`)**
+
+```bash
+cd ~
+
+rm -rf ~/plantdoc
 mkdir -p ~/plantdoc
 
-# PlantVillage: download only the raw/color folder from GitHub
-svn export https://github.com/spMohanty/PlantVillage-Dataset/trunk/raw/color ~/plantvillage/plantvillage_dataset/color
-
-# PlantDoc: clone the dataset repo, then expose its train folder at ~/plantdoc/train
 git clone https://github.com/pratikkayal/PlantDoc-Dataset.git ~/plantdoc/PlantDoc-Dataset
 ln -sfn ~/plantdoc/PlantDoc-Dataset/train ~/plantdoc/train
 
-# Verify expected layouts
-ls ~/plantvillage/plantvillage_dataset/color | head
 ls ~/plantdoc/train | head
 ```
 
-The first `ls` output should list PlantVillage **class** folders such as `Tomato___Early_blight`
-or `Corn_(maize)___Common_rust_`. The second should list PlantDoc class folders such as
+The PlantVillage `ls` output should list **class** folders such as `Tomato___Early_blight` or
+`Corn_(maize)___Common_rust_`. The PlantDoc `ls` output should list folders such as
 `Tomato Early blight leaf` or `Corn rust leaf`.
 
 If you already downloaded the datasets elsewhere, you may **copy** or **symlink** them into
