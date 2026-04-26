@@ -146,21 +146,6 @@ def build_dataloaders(
     )
     pd_eval_ds = build_plantdoc_dataset(pd_csv)
 
-    for name, ds, path in [
-        ("PlantVillage train", pv_train_ds, train_csv),
-        ("PlantVillage val", pv_val_ds, val_csv),
-        ("PlantVillage test", pv_test_ds, test_csv),
-        ("PlantDoc eval", pd_eval_ds, pd_csv),
-    ]:
-        if len(ds) == 0:
-            raise ValueError(
-                f"{name} split has 0 rows in {path.resolve()}. "
-                "Raw data and split CSVs are not committed (see .gitignore: data/*). On a new "
-                "machine, copy `data/splits/*.csv` and `data/metadata/*.csv` from your other "
-                "setup, or regenerate them with the scripts in README after installing datasets. "
-                f"(file exists: {path.resolve().is_file()})"
-            )
-
     datasets = AllDatasets(
         pv_train=pv_train_ds,
         pv_val=pv_val_ds,

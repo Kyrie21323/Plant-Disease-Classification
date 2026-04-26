@@ -248,38 +248,61 @@ succeeded, recreate the venv on **`$HOME/.venvs/...`**, and run **`python -m pip
 
 ### 3. Download raw image datasets, place them in WSL, and build `data/` CSVs
 
-**Raw images are not in the repository.** You must **download** the corpora yourself, follow
-[DATASET_LICENSES.md](DATASET_LICENSES.md) for **citation and license** text, and keep files on
-the **WSL (Linux) filesystem** (see **Storing data (WSL)** for NTFS / filename issues).
+**Raw images are not in the repository** and are **not** committed to git (see
+[`.gitignore`](.gitignore): `data/*` for generated CSVs only; **large** image trees are always
+external). You must **obtain** the corpora from the **upstream** projects yourself. This
+**project repository does not own, mirror, or redistribute** PlantVillage or PlantDoc; it only
+documents how to point the code at them. Follow [DATASET_LICENSES.md](DATASET_LICENSES.md) for
+**citation and license** text, and keep files on the **WSL (Linux) filesystem** (see **Storing
+data (WSL)** for NTFS / filename issues).
 
-**Target layout** (Bash, under your WSL home):
+**Target layout** (under your WSL home):
 
 - **PlantVillage:** `~/plantvillage/plantvillage_dataset/color`
 - **PlantDoc:** `~/plantdoc/train`
 
-**Where to download**
+**Where to download (official sources)**
 
 | Dataset | Project role | Upstream (official) |
 | --- | --- | --- |
 | **PlantVillage** | Training, val selection, in-domain test | [github.com/spMohanty/PlantVillage-Dataset](https://github.com/spMohanty/PlantVillage-Dataset) (Mohanty *et al.*, 2016) |
 | **PlantDoc** | Final external / shift evaluation only (not for tuning) | [github.com/pratikkayal/PlantDoc-Dataset](https://github.com/pratikkayal/PlantDoc-Dataset) (Singh *et al.*, 2020, CC BY 4.0) |
 
-**Suggested steps (WSL, illustrative)** - adjust paths to match what you unzipped:
+**Recommended automatic setup (WSL, copy-paste)** — The block below pulls **only** what is
+needed into the paths expected by `src/data/build_subset_metadata.py`. It uses **third-party**
+repositories; **compliance** (attribution, license, use) remains **your** responsibility under
+[DATASET_LICENSES.md](DATASET_LICENSES.md).
 
-1. `mkdir -p ~/plantvillage ~/plantdoc`
-2. **PlantVillage:** from the upstream repo, **clone** or use **Code > Download ZIP** on GitHub.
-   Locate the `color` directory whose **immediate** subfolders are **per-class** folders (e.g.
-   `Tomato___Early_blight`). The archive layout can vary (extra folders like `raw/` or
-   `segmented/`). The code expects the **single** `color` level that directly contains those
-   classes. Create `~/plantvillage/plantvillage_dataset/` and **copy** or **symlink** that
-   `color` tree so that `ls ~/plantvillage/plantvillage_dataset/color` lists class
-   subdirectories.
-3. **PlantDoc:** from the upstream repo, clone or download ZIP, then make **training** images
-   available as `~/plantdoc/train` (per-class subfolders), e.g. with a symlink if the download
-   lives elsewhere: `ln -s /path/to/.../train ~/plantdoc/train`
-4. If you use different absolute paths, set `PLANTVILLAGE_DIR` / `PLANTDOC_DIR` in
-   `src/data/build_subset_metadata.py` and the matching settings in
-   `src/data/dataloaders.py` (and rebuild metadata/splits after any change).
+```bash
+cd ~
+
+sudo apt update
+sudo apt install -y git subversion
+
+rm -rf ~/plantvillage ~/plantdoc
+mkdir -p ~/plantvillage/plantvillage_dataset
+mkdir -p ~/plantdoc
+
+# PlantVillage: download only the raw/color folder from GitHub
+svn export https://github.com/spMohanty/PlantVillage-Dataset/trunk/raw/color ~/plantvillage/plantvillage_dataset/color
+
+# PlantDoc: clone the dataset repo, then expose its train folder at ~/plantdoc/train
+git clone https://github.com/pratikkayal/PlantDoc-Dataset.git ~/plantdoc/PlantDoc-Dataset
+ln -sfn ~/plantdoc/PlantDoc-Dataset/train ~/plantdoc/train
+
+# Verify expected layouts
+ls ~/plantvillage/plantvillage_dataset/color | head
+ls ~/plantdoc/train | head
+```
+
+The first `ls` output should list PlantVillage **class** folders such as `Tomato___Early_blight`
+or `Corn_(maize)___Common_rust_`. The second should list PlantDoc class folders such as
+`Tomato Early blight leaf` or `Corn rust leaf`.
+
+If you already downloaded the datasets elsewhere, you may **copy** or **symlink** them into
+these paths instead of running the block above. If you use different absolute paths, set
+`PLANTVILLAGE_DIR` / `PLANTDOC_DIR` in `src/data/build_subset_metadata.py` and rebuild metadata
+and splits.
 
 **“Data cleaning / prep” in this project (not manual image retouching)**
 
@@ -305,19 +328,12 @@ end-to-end pipeline.
    python split_data.py
    ```
    Run from **`src/data/`** so `data_utils` imports match. Outputs land under `data/metadata/`
-   and `data/splits/`.
+   and `data/splits/` (generated files; **not** raw images).
 
    **If `~/plantvillage/...` or `~/plantdoc/...` is missing,** the metadata script still writes
-   CSVs, but with **0 image rows** and `split_data.py` then writes **header-only** splits. That
-   is not a “silent success.” Verify **before** `evaluate_final.py`:
-
-   ```bash
-   wc -l data/metadata/plantvillage_subset_metadata.csv
-   wc -l data/splits/plantvillage_train_split.csv
-   ```
-   The train split should have **thousands** of lines (not `1` = header only). You should also
-   see `ls ~/plantvillage/plantvillage_dataset/color` and `ls ~/plantdoc/train` list class
-   folders.
+   CSVs, but with **0 image rows** and `split_data.py` then writes **header-only** splits; later
+   training or evaluation will then fail or be meaningless until the raw data and CSVs are
+   fixed.
 
    If you created a **project-local** `.venv` under the repo instead (see **§2**), activate it
    with `source ../../.venv/bin/activate` from `src/data/` (or `source .venv/bin/activate` from
