@@ -44,16 +44,34 @@ pip-install**:
 - Reading **Markdown / JSON** in a Windows editor is fine, but use **WSL** for executing the
   steps in this section.
 
-### 1. `cd` to the repository in WSL
+### 1. Clone this repository and `cd` into it (WSL)
 
-If the project lives under your Windows `C:` drive, the mount is usually `/mnt/c/...`:
+**If you do not already have a local copy**, get the project with **git** in WSL (install `git`
+in Ubuntu if needed: `sudo apt update && sudo apt install git`). Use the **HTTPS** or **SSH** URL
+from the green **Code** button on the GitHub page for *this* project (or your fork if you
+forked it). The canonical remote for this work is often:
 
 ```bash
-cd /mnt/c/Users/YourName/Documents/GitHub/Plant-Disease-Classification
+cd ~
+git clone https://github.com/Kyrie21323/Plant-Disease-Classification.git
+cd Plant-Disease-Classification
 ```
 
-If you cloned the repo into your WSL home instead, the path is something like
-`~/Documents/Plant-Disease-Classification` - adjust to match your layout.
+If you use a different fork, clone that URL instead.
+
+**If the repo is already on disk** (e.g. you unzipped a release or you keep the project on
+**Windows** and open it from WSL), you only need to **`cd` to the project root** in a WSL
+shell:
+
+- From a clone on a Windows drive, the WSL path is usually under **`/mnt/c/...`**:
+  ```bash
+  cd /mnt/c/Users/YourName/Documents/GitHub/Plant-Disease-Classification
+  ```
+- If you used **`git clone` inside** WSL (Linux home only), a typical path is
+  `~/Documents/Plant-Disease-Classification` or `~/Plant-Disease-Classification` - `cd` there.
+
+All later commands in this section assume you are in the **repository root** (the directory that
+contains `README.md` and `requirements.txt`).
 
 ### 2. Create a virtual environment, activate it, and install dependencies (recommended)
 

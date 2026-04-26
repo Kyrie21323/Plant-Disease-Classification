@@ -31,6 +31,8 @@ notebook removed).
 or **inspect** the work without overclaiming. The following are now covered in **README §
 Reproducibility / running the project**:
 
+- [x] **Clone the project** - README §1: `git clone` with GitHub Code URL, or `cd` to an
+  existing tree under `/mnt/c/...` or `~/...`.
 - [x] **Where to run (WSL2 Ubuntu + Bash)** and **venv** - README requires Linux/WSL for
   scripts, `python3 -m venv .venv` / `source .venv/bin/activate` before `pip` / `python`, with
   optional PyTorch install note; evaluation/training blocks include `source .venv`.
