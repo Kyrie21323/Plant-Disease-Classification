@@ -2,9 +2,9 @@
 
 **A Study of Generalization, Dataset Shift, and Possible Shortcut Learning**
 
-This document reports final results and interpretation for the project after model selection,
-in-domain test evaluation, and external PlantDoc evaluation. It is written for use in a final
-report or presentation.
+This document presents final results and interpretation for the project after model selection,
+in-domain test evaluation, and external evaluation on PlantDoc. It is written for a university
+ML course final report and supporting presentation materials.
 
 ---
 
@@ -25,9 +25,9 @@ The experiment is designed to study:
   in-distribution accuracy by relying on **dataset-specific** visual regularities (e.g.
   background, lighting statistics, resolution) that **do not** transfer to a new collection.
 
-**Interpretation rule used throughout this report:** Results can be *consistent with* dataset
-shift and *possible* shortcut learning. They do **not** prove that a specific spurious cue
-(e.g. “only background”) caused any particular prediction.
+**Interpretation throughout this report:** Findings can be *consistent with* dataset shift and
+*possible* shortcut learning. They do **not** establish that a specific spurious cue (for example,
+reliance on background alone) caused any given prediction.
 
 ---
 
@@ -49,7 +49,7 @@ to pick hyperparameters.
 | Role | Purpose |
 | --- | --- |
 | **External evaluation** | **After** the final models were selected using PlantVillage validation, both models were evaluated on PlantDoc **once** to measure **out-of-distribution** performance. |
-| **Shortcut / generalization analysis** | PlantDoc was **never** used for tuning, so it remains a **clean** stress test: any drop here is *not* due to overfitting the external set to a metric. |
+| **Shortcut / generalization analysis** | The same one-time run supports discussion of *possible* shortcut reliance and error patterns. PlantDoc was **not** used for training, tuning, or checkpoint selection. |
 
 ### 2.3 Why compare PlantVillage vs PlantDoc
 
@@ -100,7 +100,7 @@ supports the need for **careful** external testing and the *hypothesis* of
 
 ---
 
-## 4. BaselineCNN tuning journey (PlantVillage validation only)
+## 4. BaselineCNN hyperparameter search and model selection (PlantVillage validation only)
 
 **Rule:** All tuning and **model selection** used **only** **PlantVillage validation loss** (and
 associated checkpointing). **PlantDoc** was **not** used. Hyperparameters in `train_baseline.py`
@@ -118,14 +118,13 @@ and `transforms.py` were adjusted in numbered runs; outputs were preserved as `*
 `outputs/results/baseline_results.json` (original), `baseline_results_run1.json` …
 `baseline_results_run4.json`.
 
-- **Run 3** was selected as the **sole final BaselineCNN** because it had the **lowest**
-  PlantVillage validation loss among the tuning sequence above.
-- **Run 4** was **rejected** because it **worsened** validation loss and test metrics -
-  stronger color jitter, in this setup, did **not** help in-domain and would have been a
-  **worse** choice for the stated selection rule.
-- **Runs 1, 2, and 4** are **supporting evidence** of how each knob moved the **validation**
-  objective; they are **not** reported as final models in head-to-head comparison with
-  ResNet-18.
+- **Run 3** was selected as the **sole final BaselineCNN** because it achieved the **lowest**
+  PlantVillage validation loss in the sequence above.
+- **Run 4** was **rejected** because it produced **higher** validation loss and **lower** test
+  metrics: stronger `ColorJitter` in this configuration did not improve in-domain performance
+  under the same selection rule.
+- **Runs 1, 2, and 4** document how each change affected the **validation** objective; they are
+  **not** the models used for the final side-by-side comparison with ResNet-18.
 
 **Final Baseline CNN checkpoint (only one):**
 
@@ -133,7 +132,7 @@ and `transforms.py` were adjusted in numbered runs; outputs were preserved as `*
 
 ---
 
-## 5. Final evaluation (Step 13) - exact aggregates from JSON
+## 5. Final evaluation — aggregate results from JSON
 
 The script `src/training/evaluate_final.py` loaded the two **final** checkpoints and
 re-evaluated on **PlantVillage test** and **PlantDoc** with identical preprocessing
@@ -176,17 +175,18 @@ updates.
 | **Baseline (run3)** | 0.9718 | 0.2330 | 0.7388 | 0.9698 | 0.1865 | 0.7833 |
 | **ResNet-18** | 0.9989 | 0.4000 | 0.5989 | 0.9987 | 0.3202 | 0.6785 |
 
-**Takeaway:** **ResNet-18** achieves **higher** PlantDoc accuracy and F1 and a **smaller**
+**Summary:** **ResNet-18** achieves **higher** PlantDoc accuracy and F1 and a **smaller**
 generalization gap on both accuracy and F1, but **both** models show a **large** drop on
-PlantDoc compared to PlantVillage test. High in-domain test scores are **not** sufficient, on
-this protocol, to claim **reliable** field-like performance on PlantDoc.
+PlantDoc relative to PlantVillage test. High in-domain test scores are **not** sufficient, under
+this protocol, to support claims of **reliable** field-like performance on PlantDoc.
 
 ---
 
 ## 6. Figures and visual record
 
-**Relative paths** are from the repository root. The blank line after each image helps
-GitHub’s Markdown renderer; captions are italic on the line below.
+Paths to figures below are **relative to the repository root**. A blank line after each `![...]`
+line follows common Markdown style for readability; *italic captions* appear on the line below
+each image.
 
 ### 6.1 EDA and dataset context
 
@@ -205,7 +205,7 @@ GitHub’s Markdown renderer; captions are italic on the line below.
 
 *Text summary of sizes and class counts:* `outputs/results/final_subset_eda_summary.md`.
 
-### 6.2 BaselineCNN tuning (training curves, supporting)
+### 6.2 BaselineCNN training runs (curves and per-run confusion matrices)
 
 ![Baseline training curves, original / pre–run number](outputs/figures/baseline_training_curves.png)
 
@@ -227,7 +227,8 @@ GitHub’s Markdown renderer; captions are italic on the line below.
 
 *Figure: Run 4 - stronger `ColorJitter` (rejected: worse validation).*
 
-**Per-run confusion matrices at end of training** (supporting, not the Step 13 final eval):
+**Per-run confusion matrices** (saved at the end of each training run, not from the final
+`evaluate_final.py` pass; see Section 6.4):
 `outputs/figures/baseline_confusion_matrix.png`, `baseline_confusion_matrix_run1.png` through
 `run4.png`.
 
@@ -238,10 +239,11 @@ GitHub’s Markdown renderer; captions are italic on the line below.
 *Figure: ResNet-18 fine-tuning on PlantVillage (checkpoint `resnet18_best.pt` used in final
 eval).*
 
-**Legacy end-of-run confusion (initial training, not Step 13):**
+**End-of-training** confusion from the ResNet-18 run (for reference; not the matrix from the
+`evaluate_final.py` pass in Section 6.4):
 `outputs/figures/resnet18_confusion_matrix.png`.
 
-### 6.4 Final Step 13 confusion matrices (official report figures)
+### 6.4 Confusion matrices from final evaluation (`evaluate_final.py`)
 
 ![Baseline - PlantVillage test](outputs/figures/baseline_pv_test_confusion_matrix.png)
 
@@ -257,42 +259,43 @@ eval).*
 
 ![ResNet-18 - PlantDoc](outputs/figures/resnet18_plantdoc_confusion_matrix.png)
 
-*Figure: **Final** ResNet-18 on **PlantDoc** - many off-diagonal errors remain despite higher
-mean accuracy than the baseline.*
+*Figure: **Final** ResNet-18 on **PlantDoc**; substantial off-diagonal error mass remains
+despite higher mean accuracy than the baseline.*
 
-**Class-level cell counts** appear **only** inside these PNGs in the current project layout;
-they were **not** automatically exported to CSV/JSON in the evaluation script. The
-**narrative** in Section 7 is based on **visual inspection** of these figures and the
-**aggregate** metrics above. For a thesis table of **exact** per-class confusion counts,
-**re-open the PNGs** or **export the confusion matrix to a file** in a future post-processing
-step.
+**Class-level cell counts** are shown only in these PNGs in the current project layout; the
+evaluation script did not write per-cell counts to CSV or JSON. The discussion in Section 7
+relies on **visual inspection** of the figures and the **aggregate** metrics above. Exact
+per-class confusion integers can be read from the figures or obtained by a separate export step
+in future work.
 
 ---
 
-## 7. Failure modes (qualitative, from confusion matrices + aggregates)
+## 7. Failure analysis (qualitative, from confusion matrices and aggregates)
 
-- **Large PlantVillage → PlantDoc drop** (both models): aggregate accuracy falls from **~97% /
-  ~99%** to **~23% / ~40%** - a **stark** shift, consistent with **strong domain shift** and
-  *limited* transfer of rules learned on PlantVillage alone.
-- **Small-spot / fine-grained tomato classes** (e.g. **septoria**, **bacterial spot**, **early
-  blight**): the PlantDoc matrices show **heavy** off-diagonal mass for several tomato-related
-  rows, suggesting that **subtle** lesion patterns are hard to align across datasets.
-  **ResNet-18** can still show **catastrophic** per-class behavior on a row (e.g. **bacterial
-  spot** in the final figure) **even** when **mean** accuracy is higher than the baseline.
-- **Cross-species confusion** on PlantDoc: many errors move mass across **corn / tomato /
-  potato / squash** - the model is not only confusing **similar diseases** on the same host,
-  but also **host** and **context** in harder images. This is *consistent with* **global** scene
-  features playing a role; it is **not** proof that a single feature caused each error.
-- **ResNet-18** improves the **mean** and **typical** rows vs baseline but **retains** serious
-  failure modes: **concentrated** mistakes (e.g. **rust vs leaf blight** in corn in the final
-  PlantDoc matrix) and **very low** accuracy on some classes.
+- **Generalization gap (both models).** Aggregate accuracy falls from about **~97% / ~99%** on
+  PlantVillage test to about **~23% / ~40%** on PlantDoc—a **substantial** shift, *consistent
+  with* **strong domain shift** and **limited** transfer of rules learned on PlantVillage alone.
+- **Fine-grained tomato classes** (e.g. **septoria**, **bacterial spot**, **early
+  blight**): the PlantDoc matrices show **substantial** off-diagonal mass for several
+  tomato-related rows, *suggesting* that **subtle** lesion patterns are **difficult to align**
+  across datasets. **ResNet-18** can still exhibit **very poor** per-class accuracy on
+  individual classes (e.g. **bacterial spot** in the final figure) **even** when **mean** accuracy
+  exceeds the baseline.
+- **Cross-species confusion** on PlantDoc: many errors place mass across **corn / tomato /
+  potato / squash**—the model is not only confusing **similar diseases** on the same host,
+  but also **host** and **context** in difficult images. This is *consistent with* **global** scene
+  features **possibly** playing a role; it is **not** evidence that a single feature caused
+  each error.
+- **ResNet-18** improves the **mean** and **typical** class outcomes relative to the baseline
+  but **still** shows **concentrated** error patterns (e.g. **rust** vs **leaf blight** in corn in
+  the final PlantDoc matrix) and **very low** accuracy on some classes.
 
 *Exact* off-diagonal integers should be read from the figures or from a **future** exported
 matrix file.
 
 ---
 
-## 8. Shortcut learning and generalization (careful language)
+## 8. Shortcut learning and generalization
 
 - **High** PlantVillage test accuracy together with **low** PlantDoc accuracy is **evidence of
   dataset shift** and is **compatible with** models exploiting **in-distribution regularities**
@@ -306,8 +309,8 @@ matrix file.
   *consistent with* **transfer learning** helping **separate** disease-relevant structure from
   some nuisance variation - *without* identifying a single mechanism per prediction.
 
-**Phrasing to prefer:** *“suggests,”* *“is consistent with,”* *“may indicate,”* *“does not
-prove a specific cue.”*
+**Recommended phrasing** for claims about mechanism: *suggests*; *is consistent with*; *may
+indicate*; *does not establish* a specific cue for individual predictions.
 
 ---
 
@@ -316,14 +319,14 @@ prove a specific cue.”*
 ### 9.1 Main findings
 
 1. **ResNet-18** **transfers** better to PlantDoc than **Baseline run3** (higher PlantDoc
-   accuracy/F1, smaller gaps - **Section 5**), but **both** models show a **large**
+   accuracy and F1, smaller gaps; **Section 5**), but **both** models show a **large**
    generalization gap on this protocol.
-2. **Tuning** the custom CNN (LR, training length, weight decay, dropout) **improved** PlantVillage
-   validation and test metrics; **aggressive** color augmentation (run4) **hurt** in-domain
-   performance under the same selection rule.
-3. **PlantDoc** was reserved until **after** model selection, so the external numbers reflect a
-   **genuine** held-out test of **new data distribution**, not a hyperparameter that was
-   **optimized** on PlantDoc.
+2. **Tuning** the custom CNN (learning rate, training length, weight decay, dropout) **improved**
+   PlantVillage validation and test metrics; **aggressive** color augmentation (run 4)
+   **reduced** in-domain performance under the same selection rule.
+3. **PlantDoc** was held out until **after** model selection, so the external results reflect
+   **genuine** out-of-distribution evaluation on a **new** imaging context, not hyperparameters
+   fit to PlantDoc.
 
 ### 9.2 Implication for “real-world” plant disease systems
 
@@ -358,11 +361,10 @@ prove a specific cue.”*
 | Baseline run4 | `outputs/results/baseline_results_run4.json` |
 | EDA text summary | `outputs/results/final_subset_eda_summary.md` |
 | Checkpoints (final) | `outputs/checkpoints/baseline_cnn_best_run3.pt`, `outputs/checkpoints/resnet18_best.pt` (not in git; from training or the [v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints) Release) |
-| Step 13 figures | `outputs/figures/baseline_*_confusion_matrix.png`, `resnet18_*_confusion_matrix.png` (see **Section 6**) |
+| Confusion matrices (final evaluation) | `outputs/figures/baseline_*_confusion_matrix.png`, `resnet18_*_confusion_matrix.png` (see **Section 6.4**) |
 
 ---
 
-*End of `FINAL_ANALYSIS.md` - Step 15 reporting. Content and metrics are unchanged from the
-original report; Markdown tables and figure blocks were reformatted for GitHub preview. No
-training or re-evaluation was performed in documentation-only updates; numbers and paths reflect
-the repository at the time of that update.*
+*This report is documentation-only. Reported numerics, paths, and protocol are unchanged from the
+completed project evaluation. Tables and figure references were prepared for the course
+repository and GitHub rendering.*

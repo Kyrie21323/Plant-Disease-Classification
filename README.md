@@ -11,7 +11,7 @@ ResNet-18** (ImageNet pretrained) under the same PlantVillage splits, then measu
 **out-of-distribution** behavior on PlantDoc.
 
 Results are **consistent with** strong **dataset shift** and **possible** shortcut learning
-(e.g. background, lighting, style)-this is **evidence and interpretation**, not proof of a
+(e.g. background, lighting, style). This is **evidence and interpretation**, not proof of a
 specific spurious cue for every error.
 
 **What to read**
@@ -19,12 +19,11 @@ specific spurious cue for every error.
 | Document | What it is |
 | --- | --- |
 | **README** (this file) | Quick protocol, results table, and how to run evaluation |
-| **[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)** | Long-form report: narrative, all figures, and interpretation (same story as the tables in `outputs/`) |
+| **[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)** | Long-form report: narrative, all figures, and interpretation (aligned with `outputs/results/`) |
 | **[outputs/results/*.json](outputs/results/)** | Tracked metrics (final eval, per-run training, comparison JSON) |
 | **[outputs/figures/*.png](outputs/figures/)** | Tracked curves, confusion matrices, and EDA figures |
 | **Python in [`src/`](src/)** | Data prep, training, and `evaluate_final.py` for reproducible runs |
 | **[DATASET_LICENSES.md](DATASET_LICENSES.md)** | Dataset citations, CC BY 4.0 (PlantDoc) notes, and ownership |
-| **[docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)** | End-to-end workflow and what was run in order |
 
 ---
 
@@ -93,7 +92,7 @@ from retraining instead of loading these checkpoints, unless you accept small nu
 - It does **not** force every user to **retrain** two models (expensive and often impractical on
   CPU-only or shared machines).
 - **Training time** and **GPU** availability differ widely; retraining is not a fair bar for
-  *verification* of the reported Step-13 table.
+  *verification* of the reported final-evaluation table.
 - **CUDA**, **PyTorch**, and **hardware** differ across systems; retraining can yield **small**
   numerical differences even with **fixed random seeds** (dataloader order, non-deterministic
   ops, etc.).
@@ -283,8 +282,9 @@ the **WSL (Linux) filesystem** (see **Storing data (WSL)** for NTFS / filename i
 The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (then the
 **70/15/15** PlantVillage split) are produced by the scripts below; see
 [docs/FINAL_CLASS_SUBSET.md](docs/FINAL_CLASS_SUBSET.md) and
-[docs/CLASS_MAPPING.md](docs/CLASS_MAPPING.md) for what was chosen and
-[docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the full order of operations.
+[docs/CLASS_MAPPING.md](docs/CLASS_MAPPING.md) for what was chosen, and the **Reproducibility** /
+**§3** / **Training** sections of this README (plus [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)) for the
+end-to-end pipeline.
 
 1. If loaders cannot find your `data/splits` and `data/metadata` CSVs, set **`REPO_ROOT`** in
    `src/data/dataloaders.py` to this clone’s path. The **`build_subset_metadata.py`** and
@@ -448,7 +448,7 @@ and related scripts).
 | **PlantDoc** | `~/plantdoc/train` |
 
 The repository’s `data/metadata/` and `data/splits/` hold **CSV** metadata and splits
-generated from these trees (see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)).
+generated from these trees (built as in **§3**).
 
 ---
 
@@ -534,8 +534,9 @@ evaluation) after obtaining or generating the final `.pt` files.
 
 **Regenerating metadata / splits (historical / advanced):** if you need to rebuild CSVs, run
 the scripts from the repo in WSL with `PYTHONPATH` or `cd` to `src/data` as your workflow
-requires-see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the completed pipeline. The
-project no longer requires copying files to `~/` unless you prefer that layout.
+requires; use **§3** above, the `build_subset_metadata.py` and `split_data.py` docstrings, and
+[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md) for the completed pipeline. The project no longer
+requires copying files to `~/` unless you prefer that layout.
 
 ---
 
@@ -546,8 +547,8 @@ project no longer requires copying files to `~/` unless you prefer that layout.
   [configs/class_subset_v1.json](configs/class_subset_v1.json)).
 - **Broader name alignment:** [docs/CLASS_MAPPING.md](docs/CLASS_MAPPING.md) (all candidate
   overlaps).
-- **Workflow and history:** [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) (chronology of the
-  completed pipeline).
+- **Narrative and analysis:** [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md) (method, results, and
+  discussion).
 
 ---
 
@@ -573,10 +574,9 @@ them. **`outputs/`** contains checkpoints, training curves, and result JSON. Che
 ├── data/                     # Built locally: CSV metadata + PV splits (not raw images)
 │   ├── metadata/
 │   └── splits/
-├── docs/                      # Class mapping, subset rationale, project plan
+├── docs/                      # Class mapping, subset rationale
 │   ├── CLASS_MAPPING.md
-│   ├── FINAL_CLASS_SUBSET.md
-│   └── PROJECT_PLAN.md
+│   └── FINAL_CLASS_SUBSET.md
 ├── outputs/                   # By-products of training and evaluation
 │   ├── checkpoints/          # *.pt (ignored; keep local or LFS for sharing weights)
 │   ├── figures/              # Curves, confusion matrices, EDA (PNGs; tracked in git)
@@ -594,7 +594,7 @@ them. **`outputs/`** contains checkpoints, training curves, and result JSON. Che
 | --- | --- |
 | `src/training/evaluate_final.py` | Final eval on **PV test** + **PlantDoc** (after training) |
 | `src/data/dataloaders.py` | Loaders; override CSV paths in code if your data layout differs |
-| `outputs/results/*_final_eval.json` | Step-13 aggregate numbers used in the README table |
+| `outputs/results/*_final_eval.json` | Final-evaluation JSON aggregates (same numbers as the summary table in this file) |
 | `FINAL_ANALYSIS.md` | Long-form report (narrative + figure references) |
 
 ---

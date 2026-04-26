@@ -42,8 +42,8 @@ All eight classes meet every selection criterion in [CLASS_MAPPING.md](CLASS_MAP
 - Excludes ambiguous healthy-only PlantDoc labels and the Tomato spider mites class (only 2
   PlantDoc images in the reference mapping).
 
-The same eight classes appear **throughout** final **BaselineCNN (run3)**, **ResNet-18**, and
-**Step 13** evaluation - **PlantDoc** was **not** used to choose this list; the list was fixed
+The same eight classes are used for **all** of **BaselineCNN (run3)**, **ResNet-18**, and
+**final** evaluation. **PlantDoc** was **not** used to choose this list; the list was fixed
 **before** any model selection.
 
 ---

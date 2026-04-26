@@ -1,6 +1,8 @@
 # Dataset Citations and Licenses
 
-This project uses PlantVillage and PlantDoc for academic plant disease classification experiments. The datasets themselves are not owned by this repository. Please cite the original dataset papers and follow their respective licenses when using the data.
+This project uses PlantVillage and PlantDoc in academic plant disease classification experiments. The
+underlying image corpora are not maintained by this repository. Please cite the original dataset
+papers and comply with the applicable terms when using or redistributing the data.
 
 ## PlantVillage
 
@@ -76,7 +78,7 @@ This project repository is **citation- and documentation-focused**; it does **no
 | PlantVillage | Training, validation, in-domain test evaluation                        | **Yes** - **validation split only** |
 | PlantDoc     | Final external generalization / dataset-shift evaluation                 | **No**                              |
 
-PlantDoc was intentionally **not** used for tuning, checkpoint selection, or label-decision changes. That keeps PlantDoc a **genuine** external stress test for generalization and dataset shift, consistent with the project protocol described in the README and in `docs/PROJECT_PLAN.md`.
+PlantDoc was intentionally **not** used for tuning, checkpoint selection, or label-decision changes. That keeps PlantDoc a **genuine** external stress test for generalization and dataset shift, consistent with the project protocol described in the README and in `FINAL_ANALYSIS.md`.
 
 ## Ownership / redistribution
 

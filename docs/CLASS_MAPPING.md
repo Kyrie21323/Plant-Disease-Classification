@@ -1,10 +1,10 @@
 # Class Mapping: PlantVillage ↔ PlantDoc
 
-This document is the **broad reference** of possible PlantVillage ↔ PlantDoc name alignments. The
-**final 8-class V1 subset** actually used in training, validation, test, and evaluation is
-**fixed** in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and
-[configs/class_subset_v1.json](../configs/class_subset_v1.json). Use that subset document for
-the exact experimental classes.
+This table documents **candidate** PlantVillage ↔ PlantDoc class-name alignments for cross-dataset
+work. The **definitive 8-class V1 subset** used in training, validation, test, and final
+external evaluation is specified in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and
+[configs/class_subset_v1.json](../configs/class_subset_v1.json); that subset file governs
+experimental classes and counts.
 
 This table maps class names between the two datasets to identify overlapping classes for
 cross-dataset generalization experiments. Both collections use different naming conventions for
