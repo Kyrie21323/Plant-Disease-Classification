@@ -33,11 +33,13 @@ Reproducibility / running the project**:
 
 - [x] **Clone the project** - README §1: `git clone` with GitHub Code URL, or `cd` to an
   existing tree under `/mnt/c/...` or `~/...`.
-- [x] **Where to run (WSL2 Ubuntu + Bash)** and **venv** - README requires Linux/WSL for
-  scripts, `python3 -m venv .venv` / `source .venv/bin/activate` before `pip` / `python`, with
-  optional PyTorch install note; evaluation/training blocks include `source .venv`.
-- [x] **Install dependencies** - `pip install -r requirements.txt` after venv is active, from
-  repo root in WSL.
+- [x] **Where to run (WSL2 Ubuntu + Bash)** and **venv** - README requires Linux/WSL; `apt install
+  python3-venv`; for clones on `/mnt/c/` use venv under `$HOME/.venvs/...` (ext4) to avoid
+  broken `pip` on NTFS; use `source .../bin/activate` and **`python -m pip`** (not system
+  `pip3`); optional PyTorch note; training/eval can `source` project `.venv` or the same home
+  venv if documented.
+- [x] **Install dependencies** - `python -m pip install -r requirements.txt` after venv is
+  active, from repo root in WSL.
 - [x] **Download / layout / metadata pipeline** - README §3: official GitHub links for
   PlantVillage and PlantDoc, target `~/...` tree, `build_subset_metadata.py` and `split_data.py`
   from `src/data/`, and pointers to `DATASET_LICENSES` / `PROJECT_PLAN` / class-subset docs.
@@ -48,17 +50,34 @@ Reproducibility / running the project**:
 - [x] **Checkpoints not tracked** - stated; not implied to ship with the clone.
 - [x] **If checkpoints are needed** - train with `train_*.py` and/or obtain copies per instructor
   / zip; `evaluate_final.py` **loads** local `.pt` files.
+- [x] **Three reproducibility modes + checkpoint path** - README: Mode 1 saved-results; Mode 2
+  **recommended** for exact final eval (WSL + data + CSVs + two `.pt` under
+  `outputs/checkpoints/`, then `evaluate_final.py`); why **`.pt` files stay out of git**; why
+  checkpoint eval is recommended vs mandatory retrain; **GitHub Release** asset
+  [v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints)
+  for **`checkpoints.zip`**; unzip + `cp` + `ls` for placing weights; **Packaging checkpoints for
+  submission** (`checkpoint_release`, `checkpoints.zip`); Mode 3 full training + caveats; **checkpoint
+  files** stay outside the main tree (release asset, not the clone); **Protocol** (PV val =
+  selection, PlantDoc = external only) preserved.
+- [x] **Checkpoint release / external weight sharing** - **Complete.** Release
+  <https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints>
+  hosts `checkpoints.zip` (weights only, not raw datasets). Checkpoints **intentionally** not in
+  git; no repo-level blocker.
 - [x] **How to run final evaluation** - `python src/training/evaluate_final.py` with `cd` example
   and note that data + weights must exist first (does not imply you can re-evaluate with **no**
-  checkpoints or **no** images).
+  checkpoints or **no** images); cross-link to **Mode 2**.
 - [x] **How to open/run the report notebook** - path and behavior when data are missing
   (saved-results mode).
 - [x] **What works without data/checkpoints** - read docs, JSON, figures, notebook in saved form.
 - [x] **What requires** raw data and checkpoints - retraining; full `evaluate_final.py` run.
 - [x] **Protocol** restated (PV val = selection; PlantDoc = external only).
 
-**Status:** **No blocking repo-level checklist items remain.** Reproducibility instructions are
-sufficient; optional narrative polish is left to the presentation, not this file.
+**Status:** **No blocking repo-level checklist items remain.** **Checkpoint-based** final
+evaluation is documented, with the **v1.0-checkpoints** GitHub Release as the **documented
+download** for `checkpoints.zip` (release asset, not committed). Checkpoint files are
+**intentionally** outside the default git tree. If a syllabus demands exact final-eval
+reproduction, use that Release (or the equivalent your instructor provides). Optional narrative
+polish is left to the presentation, not this file.
 
 ---
 
