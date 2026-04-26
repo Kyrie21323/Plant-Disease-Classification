@@ -15,11 +15,18 @@ venv/
 env/
 ENV/
 
-# Outputs (keep folder, ignore contents)
+# Outputs: ignore by default; allow key artifacts for a self-contained repo (no checkpoints)
 outputs/*
 !outputs/.gitkeep
+!outputs/results/
+!outputs/results/*.json
+!outputs/results/*.md
+!outputs/figures/
+!outputs/figures/*.png
+# Model weights — keep ignored (redundant with outputs/*, explicit for policy clarity)
+outputs/checkpoints/**
 
-# Data (keep folder, ignore contents)
+# Data (keep folder, ignore contents; raw datasets never committed)
 data/*
 !data/.gitkeep
 
