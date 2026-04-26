@@ -32,13 +32,15 @@ TEST_RATIO   = 0.15
 assert abs(TRAIN_RATIO + VAL_RATIO + TEST_RATIO - 1.0) < 1e-9, \
     "Split ratios must sum to 1.0"
 
-REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
+# Repository root: this file lives at <repo>/src/data/split_data.py
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 INPUT_CSV     = REPO_ROOT / "data" / "metadata" / "plantvillage_subset_metadata.csv"
-TRAIN_CSV     = REPO_ROOT / "data" / "splits"   / "plantvillage_train_split.csv"
-VAL_CSV       = REPO_ROOT / "data" / "splits"   / "plantvillage_val_split.csv"
-TEST_CSV      = REPO_ROOT / "data" / "splits"   / "plantvillage_test_split.csv"
-SETTINGS_JSON = REPO_ROOT / "configs"           / "split_settings.json"
+OUTPUT_DIR    = REPO_ROOT / "data" / "splits"
+TRAIN_CSV     = OUTPUT_DIR / "plantvillage_train_split.csv"
+VAL_CSV       = OUTPUT_DIR / "plantvillage_val_split.csv"
+TEST_CSV      = OUTPUT_DIR / "plantvillage_test_split.csv"
+SETTINGS_JSON = REPO_ROOT / "configs" / "split_settings.json"
 # ---------------------------------------------------------------------------
 
 
@@ -170,6 +172,8 @@ def main() -> None:
 
     fieldnames, rows = load_csv(INPUT_CSV)
     print(f"  Loaded {len(rows)} rows from plantvillage_subset_metadata.csv")
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     train, val, test = stratified_split(
         rows=rows,
