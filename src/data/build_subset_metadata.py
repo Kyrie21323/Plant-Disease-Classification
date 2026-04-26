@@ -29,16 +29,14 @@ from data_utils import (
 PLANTVILLAGE_DIR = Path.home() / "plantvillage" / "plantvillage_dataset" / "color"
 PLANTDOC_DIR     = Path.home() / "plantdoc" / "train"
 
-# Repo root is accessible via /mnt/c/... in Ubuntu WSL.
-REPO_ROOT     = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
+# Repository root: this file lives at <repo>/src/data/build_subset_metadata.py
+REPO_ROOT     = Path(__file__).resolve().parent.parent.parent
 SUBSET_CONFIG = REPO_ROOT / "configs" / "class_subset_v1.json"
 OUTPUT_DIR    = REPO_ROOT / "data" / "metadata"
 
-# If the repo root is not accessible, fall back to home directory copies.
+# If configs are not in the clone, allow a home-directory copy of the JSON only.
 if not SUBSET_CONFIG.exists():
     SUBSET_CONFIG = Path.home() / "class_subset_v1.json"
-if not OUTPUT_DIR.exists():
-    OUTPUT_DIR = Path.home()
 # ---------------------------------------------------------------------------
 
 CSV_FIELDS = [
@@ -113,6 +111,8 @@ def main() -> None:
 
     class_entries = load_class_subset(SUBSET_CONFIG)
     print(f"Loaded {len(class_entries)} classes from {SUBSET_CONFIG.name}")
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     pv_class_names = [e["plantvillage_class"] for e in class_entries]
     pd_class_names = [e["plantdoc_class"]     for e in class_entries]

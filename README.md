@@ -87,26 +87,24 @@ sudo apt install -y python3-venv
 **Put the venv on Linux’s ext4 home, not on `/mnt/c/`.** If your clone lives on a Windows
 drive (path like `/mnt/c/Users/...`), creating `python3 -m venv .venv` **inside** that tree can
 leave `pip` **half-broken** on NTFS (you may see `No module named 'pip._internal...'` and odd
-`pip` behavior). Safer pattern:
-
-```bash
-# One-time: venv in WSL home (ext4)
-python3 -m venv "$HOME/.venvs/plant-disease-classification"
-source "$HOME/.venvs/plant-disease-classification/bin/activate"
-```
-
-Then **`cd` to your project** (e.g. under `/mnt/c/...` or `~/...`) in the same shell. Your prompt
-should show the venv name when it is active. **Use only the venv’s `python` + `python -m
-pip`**, never a bare `pip`/`pip3` (that can hit **system** Python and trigger PEP 668
-“externally-managed-environment” on Ubuntu 24.04+).
+`pip` behavior). **Safer default flow** (WSL, venv in `~`, then install from the project root).
+Start in your clone (or `cd` there first), then:
 
 ```bash
 cd /path/to/Plant-Disease-Classification
-# If you use the home venv, activate in every new terminal, then:
+mkdir -p "$HOME/.venvs"
+python3 -m venv "$HOME/.venvs/plant-disease-classification"
 source "$HOME/.venvs/plant-disease-classification/bin/activate"
 python -m pip install -U pip
 python -m pip install -r requirements.txt
 ```
+
+`cd` should be the directory that contains `requirements.txt` (your clone). The prompt
+should show the venv as active. **Use only the venv’s `python` + `python -m pip`**, never a
+bare `pip`/`pip3` (that can hit **system** Python and trigger PEP 668
+“externally-managed-environment” on Ubuntu 24.04+). In a **new terminal**, activate
+again before any `python` / `pip` work:  
+`source "$HOME/.venvs/plant-disease-classification/bin/activate"`.
 
 **If the repo is already under `~` in WSL** (native ext4, not `/mnt/c/`), a project-local
 `.venv` is usually fine:
