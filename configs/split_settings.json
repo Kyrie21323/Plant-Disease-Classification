@@ -1,0 +1,41 @@
+{
+  "random_seed": 42,
+  "train_ratio": 0.7,
+  "val_ratio": 0.15,
+  "test_ratio": 0.15,
+  "total_images": 11819,
+  "train_count": 8273,
+  "val_count": 1773,
+  "test_count": 1773,
+  "per_class_train": {
+    "corn_common_rust": 834,
+    "corn_northern_leaf_blight": 690,
+    "potato_early_blight": 700,
+    "squash_powdery_mildew": 1284,
+    "tomato_bacterial_spot": 1489,
+    "tomato_early_blight": 700,
+    "tomato_late_blight": 1336,
+    "tomato_septoria_leaf_spot": 1240
+  },
+  "per_class_val": {
+    "corn_common_rust": 179,
+    "corn_northern_leaf_blight": 148,
+    "potato_early_blight": 150,
+    "squash_powdery_mildew": 275,
+    "tomato_bacterial_spot": 319,
+    "tomato_early_blight": 150,
+    "tomato_late_blight": 286,
+    "tomato_septoria_leaf_spot": 266
+  },
+  "per_class_test": {
+    "corn_common_rust": 179,
+    "corn_northern_leaf_blight": 147,
+    "potato_early_blight": 150,
+    "squash_powdery_mildew": 276,
+    "tomato_bacterial_spot": 319,
+    "tomato_early_blight": 150,
+    "tomato_late_blight": 287,
+    "tomato_septoria_leaf_spot": 265
+  },
+  "note": "PlantDoc is kept as a separate cross-dataset evaluation set and is not split here."
+}

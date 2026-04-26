@@ -1,0 +1,66 @@
+[
+  {
+    "label_id": 0,
+    "unified_label": "corn_northern_leaf_blight",
+    "plant": "Corn",
+    "disease": "Northern Leaf Blight",
+    "plantvillage_class": "Corn_(maize)___Northern_Leaf_Blight",
+    "plantdoc_class": "Corn leaf blight"
+  },
+  {
+    "label_id": 1,
+    "unified_label": "tomato_septoria_leaf_spot",
+    "plant": "Tomato",
+    "disease": "Septoria Leaf Spot",
+    "plantvillage_class": "Tomato___Septoria_leaf_spot",
+    "plantdoc_class": "Tomato Septoria leaf spot"
+  },
+  {
+    "label_id": 2,
+    "unified_label": "squash_powdery_mildew",
+    "plant": "Squash",
+    "disease": "Powdery Mildew",
+    "plantvillage_class": "Squash___Powdery_mildew",
+    "plantdoc_class": "Squash Powdery mildew leaf"
+  },
+  {
+    "label_id": 3,
+    "unified_label": "potato_early_blight",
+    "plant": "Potato",
+    "disease": "Early Blight",
+    "plantvillage_class": "Potato___Early_blight",
+    "plantdoc_class": "Potato leaf early blight"
+  },
+  {
+    "label_id": 4,
+    "unified_label": "corn_common_rust",
+    "plant": "Corn",
+    "disease": "Common Rust",
+    "plantvillage_class": "Corn_(maize)___Common_rust_",
+    "plantdoc_class": "Corn rust leaf"
+  },
+  {
+    "label_id": 5,
+    "unified_label": "tomato_bacterial_spot",
+    "plant": "Tomato",
+    "disease": "Bacterial Spot",
+    "plantvillage_class": "Tomato___Bacterial_spot",
+    "plantdoc_class": "Tomato leaf bacterial spot"
+  },
+  {
+    "label_id": 6,
+    "unified_label": "tomato_late_blight",
+    "plant": "Tomato",
+    "disease": "Late Blight",
+    "plantvillage_class": "Tomato___Late_blight",
+    "plantdoc_class": "Tomato leaf late blight"
+  },
+  {
+    "label_id": 7,
+    "unified_label": "tomato_early_blight",
+    "plant": "Tomato",
+    "disease": "Early Blight",
+    "plantvillage_class": "Tomato___Early_blight",
+    "plantdoc_class": "Tomato Early blight leaf"
+  }
+]
