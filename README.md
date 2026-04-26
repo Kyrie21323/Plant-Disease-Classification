@@ -14,7 +14,15 @@ Results are **consistent with** strong **dataset shift** and **possible** shortc
 (e.g. background, lighting, style)—this is **evidence and interpretation**, not proof of a
 specific spurious cue for every error.
 
-**Detailed write-up and figures:** [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)
+**What to read**
+
+| Document | What it is |
+| --- | --- |
+| **README** (this file) | Quick protocol, results table, and how to run evaluation |
+| **[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)** | Full narrative, all figures, and interpretation |
+| **[notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb)** | Notebook report: protocol, EDA, tuning table, and final metrics from **saved** JSON/PNGs (no training by default) |
+| **[DATASET_LICENSES.md](DATASET_LICENSES.md)** | Dataset citations, CC BY 4.0 (PlantDoc) notes, and ownership |
+| **[docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)** | End-to-end workflow and what was run in order |
 
 ---
 
@@ -128,30 +136,58 @@ project no longer requires copying files to `~/` unless you prefer that layout.
   [configs/class_subset_v1.json](configs/class_subset_v1.json)).
 - **Broader name alignment:** [docs/CLASS_MAPPING.md](docs/CLASS_MAPPING.md) (all candidate
   overlaps).
-- **Current status and completed steps:** [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)
+- **Workflow and history:** [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) (chronology of the
+  completed pipeline).
 
 ---
 
 ## Repository layout
 
+At the **root** of the repository you will find the main **Markdown reports**; **code** lives
+under `src/`. **Raw image datasets** are not stored in git (place them under WSL paths as
+described above); **`data/`** only holds **generated** metadata and split CSVs when you build
+them. **`outputs/`** contains checkpoints, training curves, and result JSON. Checkpoints
+(`.pt`) are **not** version-controlled by default; `outputs/results/*.json` and
+`outputs/figures/*.png` are tracked so the docs and GitHub can reference them (see
+`.gitignore`).
+
 ```text
-configs/              # Class subset V1, split settings, etc.
-data/
-  metadata/           # Filtered metadata CSVs for PV / PlantDoc subset
-  splits/              # PlantVillage train / val / test CSVs
-docs/                 # Planning, class mapping, final subset
-notebooks/              # EDA and reporting notebooks
-outputs/
-  checkpoints/        # model .pt files
-  figures/            # training curves, confusion matrices, EDA figures
-  results/            # JSON and markdown result summaries
-src/
-  data/               # Datasets, dataloaders, transforms, split scripts
-  models/             # BaselineCNN, ResNet-18
-  training/            # train_*.py, trainer.py, evaluate_final.py
-  utils/              # metrics, plotting
-FINAL_ANALYSIS.md      # Step 15 final report (figures + interpretation)
+.
+├── README.md                 # This overview
+├── FINAL_ANALYSIS.md         # Long-form analysis + all figure links
+├── DATASET_LICENSES.md        # Citations, licenses, usage table
+├── requirements.txt
+├── configs/                  # class_subset_v1.json, split_settings.json, …
+│   ├── class_subset_v1.json
+│   └── split_settings.json
+├── data/                     # Built locally: CSV metadata + PV splits (not raw images)
+│   ├── metadata/
+│   └── splits/
+├── docs/                      # Class mapping, subset rationale, project plan
+│   ├── CLASS_MAPPING.md
+│   ├── FINAL_CLASS_SUBSET.md
+│   └── PROJECT_PLAN.md
+├── notebooks/                 # Jupyter
+│   └── plant_disease_shift_report.ipynb
+├── outputs/                   # By-products of training and evaluation
+│   ├── checkpoints/          # *.pt (ignored; keep local or LFS for sharing weights)
+│   ├── figures/              # Curves, confusion matrices, EDA (PNGs; tracked in git)
+│   └── results/              # JSON + optional EDA summary .md
+└── src/                       # All Python for data, models, training, metrics
+    ├── data/                 # Datasets, dataloaders, transforms, split & EDA scripts
+    ├── models/               # cnn_baseline.py, resnet18_finetune.py
+    ├── training/            # train_*.py, trainer.py, evaluate_final.py
+    └── utils/                # metrics.py, plotting.py
 ```
+
+**Where to look**
+
+| Path | Role |
+| --- | --- |
+| `src/training/evaluate_final.py` | Final eval on **PV test** + **PlantDoc** (after training) |
+| `src/data/dataloaders.py` | Loaders; override CSV paths in code if your data layout differs |
+| `outputs/results/*_final_eval.json` | Step-13 aggregate numbers used in the README table |
+| `notebooks/plant_disease_shift_report.ipynb` | Same story as the reports, in a runnable notebook form |
 
 ---
 

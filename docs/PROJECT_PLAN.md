@@ -81,11 +81,13 @@ the above trees, not a copy of the full image corpus inside the repo.
    spurious feature per error.
 10. **Final reporting** — [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report;
     this file as **status/plan** reference; [README.md](../README.md) as the **public
-    overview**.
+    overview**; and the **notebook** [plant_disease_shift_report.ipynb](../notebooks/plant_disease_shift_report.ipynb)
+    as a **runnable** walk-through of the same protocol and metrics using **saved** JSON/PNGs
+    (by default, no retraining in the notebook).
 
-**Notebook outline** in older revisions of this file may still be useful for teaching; the
-**source of truth** for numbers is [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and
-`outputs/results/*.json`.
+**Notebook** — The report notebook in `notebooks/plant_disease_shift_report.ipynb` replaces
+the older “data inspection” draft and mirrors the final write-ups. The **source of truth** for
+numbers remains [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and `outputs/results/*.json`.
 
 ---
 
