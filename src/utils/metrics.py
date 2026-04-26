@@ -3,9 +3,9 @@ metrics.py
 Lightweight metric helpers for classification evaluation.
 
 Functions:
-    compute_accuracy        — fraction of correctly predicted samples
-    compute_macro_f1        — unweighted mean F1 across all classes
-    compute_confusion_matrix — num_classes × num_classes count matrix
+    compute_accuracy        - fraction of correctly predicted samples
+    compute_macro_f1        - unweighted mean F1 across all classes
+    compute_confusion_matrix - num_classes × num_classes count matrix
 
 Both functions accept plain Python lists or PyTorch tensors of integer labels.
 No external dependencies beyond the standard library and (optionally) PyTorch.

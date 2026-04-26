@@ -14,7 +14,7 @@ Design choices:
     - Batch normalisation after each conv stabilises training without tuning LR carefully.
     - AdaptiveAvgPool lets the spatial path stay flexible if IMAGE_SIZE ever changes.
     - Dropout(0.5) in the head is the primary regulariser; no weight-decay tuning needed yet.
-    - 8 raw logits out — loss function (CrossEntropyLoss) applies softmax internally.
+    - 8 raw logits out - loss function (CrossEntropyLoss) applies softmax internally.
 """
 
 import torch

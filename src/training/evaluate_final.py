@@ -128,7 +128,7 @@ def eval_one_model(
 def main() -> None:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\n{'='*65}")
-    print(f"  Final Evaluation — PlantVillage Test + PlantDoc")
+    print(f"  Final Evaluation - PlantVillage Test + PlantDoc")
     print(f"  Device : {device}")
     print(f"{'='*65}\n")
 
@@ -145,9 +145,9 @@ def main() -> None:
     all_results: list[dict] = []
 
     # -----------------------------------------------------------------------
-    # BaselineCNN — run3
+    # BaselineCNN - run3
     # -----------------------------------------------------------------------
-    print("[ BaselineCNN — run3 ]")
+    print("[ BaselineCNN - run3 ]")
     model_cnn = load_model(
         BaselineCNN(num_classes=NUM_CLASSES, dropout=0.3),
         BASELINE_CKPT,
@@ -162,9 +162,9 @@ def main() -> None:
     print(f"  Saved → {result_path.name}\n")
 
     # -----------------------------------------------------------------------
-    # ResNet-18 — original run
+    # ResNet-18 - original run
     # -----------------------------------------------------------------------
-    print("[ ResNet-18 — original run ]")
+    print("[ ResNet-18 - original run ]")
     model_rn = load_model(
         build_resnet18_finetune(num_classes=NUM_CLASSES),
         RESNET18_CKPT,

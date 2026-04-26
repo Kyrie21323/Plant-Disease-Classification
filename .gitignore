@@ -23,7 +23,7 @@ outputs/*
 !outputs/results/*.md
 !outputs/figures/
 !outputs/figures/*.png
-# Model weights — keep ignored (redundant with outputs/*, explicit for policy clarity)
+# Model weights - keep ignored (redundant with outputs/*, explicit for policy clarity)
 outputs/checkpoints/**
 
 # Data (keep folder, ignore contents; raw datasets never committed)

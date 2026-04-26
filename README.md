@@ -11,7 +11,7 @@ ResNet-18** (ImageNet pretrained) under the same PlantVillage splits, then measu
 **out-of-distribution** behavior on PlantDoc.
 
 Results are **consistent with** strong **dataset shift** and **possible** shortcut learning
-(e.g. background, lighting, style)—this is **evidence and interpretation**, not proof of a
+(e.g. background, lighting, style)-this is **evidence and interpretation**, not proof of a
 specific spurious cue for every error.
 
 **What to read**
@@ -42,7 +42,7 @@ specific spurious cue for every error.
    - **PlantVillage:** `~/plantvillage/plantvillage_dataset/color`
    - **PlantDoc:** `~/plantdoc/train`  
    If your paths differ, adjust the constants in `src/data/dataloaders.py` (and rebuild
-   `data/metadata/` and `data/splits/` if needed—see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)).
+   `data/metadata/` and `data/splits/` if needed-see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)).
 
 3. **Result JSONs and figure PNGs** in `outputs/results/` and `outputs/figures/` are **versioned
    in git** (see `.gitignore`) so you can read **final numbers** and static plots **without**
@@ -56,7 +56,7 @@ specific spurious cue for every error.
    them for you.
 
 5. **Run final evaluation** (only after **checkpoints** and **dataset paths** are in place, from
-   the repo root—adjust the `cd` path to match your machine, e.g. WSL):
+   the repo root-adjust the `cd` path to match your machine, e.g. WSL):
 
    ```bash
    cd /path/to/Plant-Disease-Classification
@@ -79,7 +79,7 @@ specific spurious cue for every error.
    outputs under `outputs/`).
 
 **Protocol (unchanged):** PlantVillage **validation** is the **only** basis for Baseline
-tuning/selection; **PlantDoc** is for **final external** evaluation only—not for tuning. See
+tuning/selection; **PlantDoc** is for **final external** evaluation only-not for tuning. See
 the table in **Dataset roles** below.
 
 ---
@@ -88,9 +88,9 @@ the table in **Dataset roles** below.
 
 | Data split / set | Use |
 | --- | --- |
-| **PlantVillage — train** | Supervised training for both models. |
-| **PlantVillage — validation** | **Only** basis for **hyperparameter tuning and model selection** (Baseline CNN numbered runs: LR, weight decay, dropout, augmentation trials). ResNet-18 was trained with fixed initial settings. |
-| **PlantVillage — test** | **Final in-domain** held-out evaluation **after** model selection. |
+| **PlantVillage - train** | Supervised training for both models. |
+| **PlantVillage - validation** | **Only** basis for **hyperparameter tuning and model selection** (Baseline CNN numbered runs: LR, weight decay, dropout, augmentation trials). ResNet-18 was trained with fixed initial settings. |
+| **PlantVillage - test** | **Final in-domain** held-out evaluation **after** model selection. |
 | **PlantDoc** | **After** all selection: **external** generalization and shortcut-learning **analysis only**. **Not** used for tuning, checkpoint selection, or label decisions. |
 
 **Why this order:** If PlantDoc were used to pick hyperparameters, the external set would be
@@ -182,7 +182,7 @@ Requires the same WSL dataset paths, Python env with PyTorch, etc.
 
 **Regenerating metadata / splits (historical / advanced):** if you need to rebuild CSVs, run
 the scripts from the repo in WSL with `PYTHONPATH` or `cd` to `src/data` as your workflow
-requires—see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the completed pipeline. The
+requires-see [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the completed pipeline. The
 project no longer requires copying files to `~/` unless you prefer that layout.
 
 ---

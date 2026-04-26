@@ -1,15 +1,15 @@
-# Project Completion Checklist — Remaining Items Only
+# Project Completion Checklist - Remaining Items Only
 
 *This file tracks **only** what still matters for the **repository** as a self-contained
 artifact. It does **not** list **presentation** items (e.g. opening framing, reflection,
-batch-size talk track)—those are handled in the **slides / oral**. Low-priority polish (pinning
+batch-size talk track)-those are handled in the **slides / oral**. Low-priority polish (pinning
 `requirements.txt`, exporting confusion matrices to CSV, Colab badge, ad-hoc checkpoint uploads)
 is **out of scope** here unless a syllabus explicitly requires it. The **duplicate** notebook
 was removed; the canonical report is `notebooks/plant_disease_shift_report.ipynb`.*
 
 **Guardrails (unchanged in intent):** Standard **plant disease** classification on public
 benchmarks, plus **data-centric** **generalization** and what is *consistent with* **possible**
-shortcut learning—not a claim of full **field** deployment. **PlantVillage validation** = **only**
+shortcut learning-not a claim of full **field** deployment. **PlantVillage validation** = **only**
 tuning/selection; **PlantDoc** = **final external** eval only. **Dataset** licenses and citations
 live in [DATASET_LICENSES.md](DATASET_LICENSES.md). **JSON/PNGs** are tracked; **raw images** and
 **checkpoints** are **not** in git (by design).
@@ -25,27 +25,27 @@ notebook removed).
 
 ---
 
-## 2. Final repo-level item (reproducibility) — **complete**
+## 2. Final repo-level item (reproducibility) - **complete**
 
 **Instruction:** One pass was made to ensure [README.md](README.md) explains how to reproduce
 or **inspect** the work without overclaiming. The following are now covered in **README §
 Reproducibility / running the project**:
 
-- [x] **Install dependencies** — `pip install -r requirements.txt` from repo root.
-- [x] **Expected dataset locations** — PlantVillage `~/plantvillage/plantvillage_dataset/color`,
+- [x] **Install dependencies** - `pip install -r requirements.txt` from repo root.
+- [x] **Expected dataset locations** - PlantVillage `~/plantvillage/plantvillage_dataset/color`,
   PlantDoc `~/plantdoc/train`, with pointer to adjust `dataloaders.py` and `DATASET_LICENSES.md`.
-- [x] **Raw datasets not in repo** — stated explicitly.
-- [x] **Result JSONs and figures tracked** — stated with path pointers.
-- [x] **Checkpoints not tracked** — stated; not implied to ship with the clone.
-- [x] **If checkpoints are needed** — train with `train_*.py` and/or obtain copies per instructor
+- [x] **Raw datasets not in repo** - stated explicitly.
+- [x] **Result JSONs and figures tracked** - stated with path pointers.
+- [x] **Checkpoints not tracked** - stated; not implied to ship with the clone.
+- [x] **If checkpoints are needed** - train with `train_*.py` and/or obtain copies per instructor
   / zip; `evaluate_final.py` **loads** local `.pt` files.
-- [x] **How to run final evaluation** — `python src/training/evaluate_final.py` with `cd` example
+- [x] **How to run final evaluation** - `python src/training/evaluate_final.py` with `cd` example
   and note that data + weights must exist first (does not imply you can re-evaluate with **no**
   checkpoints or **no** images).
-- [x] **How to open/run the report notebook** — path and behavior when data are missing
+- [x] **How to open/run the report notebook** - path and behavior when data are missing
   (saved-results mode).
-- [x] **What works without data/checkpoints** — read docs, JSON, figures, notebook in saved form.
-- [x] **What requires** raw data and checkpoints — retraining; full `evaluate_final.py` run.
+- [x] **What works without data/checkpoints** - read docs, JSON, figures, notebook in saved form.
+- [x] **What requires** raw data and checkpoints - retraining; full `evaluate_final.py` run.
 - [x] **Protocol** restated (PV val = selection; PlantDoc = external only).
 
 **Status:** **No blocking repo-level checklist items remain.** Reproducibility instructions are
@@ -61,7 +61,7 @@ sufficient; optional narrative polish is left to the presentation, not this file
 | Extra opening framing of the task | **Presentation**; README is already clear on goals |
 | One-line batch-size rationale | **Presentation**; README states `32` as a fact |
 | Pin requirements, export CMs, release checkpoints, Colab badge | **Disregarded for now** (not expected to affect grading) |
-| Duplicate `01_data_inspection.ipynb` | **Removed** — fixed |
+| Duplicate `01_data_inspection.ipynb` | **Removed** - fixed |
 
 ---
 
@@ -69,7 +69,7 @@ sufficient; optional narrative polish is left to the presentation, not this file
 
 Code and docs for problem definition, protocol, EDA, models, training/tuning, final evaluation,
 generalization / careful shortcut wording, tracked results, ignored data/checkpoints, and a single
-report notebook—**no** further repo work required for those areas beyond what README now states.
+report notebook-**no** further repo work required for those areas beyond what README now states.
 
 ---
 

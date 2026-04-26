@@ -3,8 +3,8 @@ plotting.py
 Plotting helpers for training diagnostics.
 
 Functions:
-    save_training_curves  — saves a loss-vs-epoch figure to outputs/figures/
-    save_confusion_matrix — saves a labelled heatmap of the confusion matrix
+    save_training_curves  - saves a loss-vs-epoch figure to outputs/figures/
+    save_confusion_matrix - saves a labelled heatmap of the confusion matrix
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib  # type: ignore[import]
-matplotlib.use("Agg")   # non-interactive backend — safe for WSL / headless envs
+matplotlib.use("Agg")   # non-interactive backend - safe for WSL / headless envs
 import matplotlib.pyplot as plt  # type: ignore[import]
 
 # Default output directory (relative to repo root inside WSL).
@@ -27,7 +27,7 @@ def save_training_curves(
     val_losses:   list[float],
     filename:     str  = "baseline_training_curves.png",
     figures_dir:  Path = FIGURES_DIR,
-    title:        str  = "BaselineCNN — Training Curves",
+    title:        str  = "BaselineCNN - Training Curves",
 ) -> Path:
     """
     Save a figure showing training and validation loss over epochs.

@@ -34,7 +34,7 @@ import torch
 import torch.nn as nn
 
 # ---------------------------------------------------------------------------
-# Path setup — allow imports from src/data/, src/models/, src/utils/,
+# Path setup - allow imports from src/data/, src/models/, src/utils/,
 #              and src/training/ (for trainer.py)
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
@@ -63,7 +63,7 @@ for _d in (CHECKPOINTS_DIR, RESULTS_DIR, FIGURES_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# Hyperparameters — edit here for quick experiments
+# Hyperparameters - edit here for quick experiments
 # ---------------------------------------------------------------------------
 NUM_EPOCHS    = 25      # Experiment A: extended from 15 (model had not converged)
 BATCH_SIZE    = 32
@@ -88,7 +88,7 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\n{'='*60}")
-    print(f"  BaselineCNN — Plant Disease Classification  [{run_tag}]")
+    print(f"  BaselineCNN - Plant Disease Classification  [{run_tag}]")
     print(f"  Device     : {device}")
     print(f"  Epochs     : {NUM_EPOCHS}")
     print(f"  Batch size : {BATCH_SIZE}")
@@ -158,7 +158,7 @@ def main() -> None:
         val_losses=history["val_losses"],
         filename=f"baseline_training_curves_{run_tag}.png",
         figures_dir=FIGURES_DIR,
-        title=f"BaselineCNN — Training Curves ({run_tag})",
+        title=f"BaselineCNN - Training Curves ({run_tag})",
     )
     print(f"Training curve saved  → {curve_path}")
 

@@ -4,14 +4,14 @@ Shared training and evaluation utilities for plant disease classification.
 
 Both train_baseline.py and train_resnet18.py import from here.
 Centralising these functions eliminates duplicated loop logic and ensures
-that both models are evaluated identically — a prerequisite for fair comparison.
+that both models are evaluated identically - a prerequisite for fair comparison.
 
 Public API:
-    get_next_run_number — find the next unused run index for a given model prefix
-    train_one_epoch     — one gradient-update pass over the training loader
-    evaluate            — one inference pass; returns loss, accuracy, F1, and raw predictions
-    run_training_loop   — full epoch loop with checkpoint saving and console output
-    save_checkpoint     — save model weights and metadata to disk
+    get_next_run_number - find the next unused run index for a given model prefix
+    train_one_epoch     - one gradient-update pass over the training loader
+    evaluate            - one inference pass; returns loss, accuracy, F1, and raw predictions
+    run_training_loop   - full epoch loop with checkpoint saving and console output
+    save_checkpoint     - save model weights and metadata to disk
 
 Class labels (label_id → short name) are defined here as CLASS_NAMES so both
 training scripts share the same ordering when producing confusion matrices.
@@ -150,7 +150,7 @@ def evaluate(
 
     Returns:
         (mean_loss, accuracy, macro_f1, all_preds, all_targets)
-        — all_preds and all_targets are plain int lists, useful for
+        - all_preds and all_targets are plain int lists, useful for
           computing confusion matrices after the call.
     """
     # Import here to avoid circular paths when trainer is imported first.

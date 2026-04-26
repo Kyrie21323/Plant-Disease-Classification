@@ -111,7 +111,7 @@ def validate_class_folders(
         class_names: Expected class folder names.
 
     Returns:
-        (found, missing) — two lists of class names.
+        (found, missing) - two lists of class names.
     """
     dataset_dir = Path(dataset_dir)
     found, missing = [], []

@@ -3,9 +3,9 @@ dataloaders.py
 DataLoader factory functions for Plant Disease Classification.
 
 Build order:
-    1. build_plantvillage_datasets() — train / val / test from split CSVs
-    2. build_plantdoc_dataset()      — full PlantDoc metadata as eval set
-    3. build_dataloaders()           — wraps all four datasets into DataLoaders
+    1. build_plantvillage_datasets() - train / val / test from split CSVs
+    2. build_plantdoc_dataset()      - full PlantDoc metadata as eval set
+    3. build_dataloaders()           - wraps all four datasets into DataLoaders
 
 Transform assignment:
     - PlantVillage train : get_train_transform()   (augmented)
@@ -29,7 +29,7 @@ from datasets import PlantDiseaseDataset
 from transforms import get_train_transform, get_eval_transform
 
 # ---------------------------------------------------------------------------
-# Default paths — all relative to the repo root via /mnt/host/c/...
+# Default paths - all relative to the repo root via /mnt/host/c/...
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
 
@@ -101,7 +101,7 @@ def build_plantdoc_dataset(
     """
     Build the PlantDoc cross-dataset evaluation set.
 
-    Uses the deterministic eval transform — identical to PV val/test —
+    Uses the deterministic eval transform - identical to PV val/test -
     so that in-domain vs cross-dataset performance comparisons are fair.
 
     Args:
@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
     # Verify all label ids are within the expected 0–7 range.
     all_valid = all(0 <= lid <= 7 for lid in labels.tolist())
-    print(f"  All label ids in 0–7 : {'✓ Yes' if all_valid else '[!] NO — unexpected ids found'}")
+    print(f"  All label ids in 0–7 : {'✓ Yes' if all_valid else '[!] NO - unexpected ids found'}")
 
     # Verify observed labels are a subset of expected.
     observed = set(labels.unique().tolist())

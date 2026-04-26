@@ -73,7 +73,7 @@ def inspect_dataset(name: str, dataset_dir: Path) -> None:
 def main() -> None:
     """Inspect PlantVillage and PlantDoc and print basic statistics."""
 
-    print("\n=== Plant Disease Classification — Dataset Inspection ===\n")
+    print("\n=== Plant Disease Classification - Dataset Inspection ===\n")
 
     inspect_dataset("PlantVillage (training / in-domain test)", PLANTVILLAGE_DIR)
     inspect_dataset("PlantDoc (cross-dataset generalization test)", PLANTDOC_DIR)

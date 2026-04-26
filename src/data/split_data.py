@@ -156,7 +156,7 @@ def print_split_summary(
 
 
 def main() -> None:
-    print("\n=== PlantVillage Subset — Train/Val/Test Split ===\n")
+    print("\n=== PlantVillage Subset - Train/Val/Test Split ===\n")
     print(f"  Seed        : {RANDOM_SEED}")
     print(f"  Train ratio : {TRAIN_RATIO:.0%}")
     print(f"  Val ratio   : {VAL_RATIO:.0%}")

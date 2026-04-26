@@ -7,7 +7,7 @@ Fine-tuning approach:
     - Replace the final fully connected layer (fc) with a new Linear(512→8).
       Only the replaced layer has randomly initialised weights; everything else
       starts from ImageNet features.
-    - All layers are trainable — full fine-tuning, not feature extraction.
+    - All layers are trainable - full fine-tuning, not feature extraction.
       This is appropriate for our dataset size and keeps the script simple.
 
 Preprocessing alignment:
@@ -15,7 +15,7 @@ Preprocessing alignment:
     normalisation statistics (mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     and resizes to 224×224. This is identical to what the pretrained ResNet-18
     expects, so no changes to the data pipeline are required. This also means
-    baseline and ResNet-18 results are directly comparable — both models see
+    baseline and ResNet-18 results are directly comparable - both models see
     exactly the same image tensors.
 """
 

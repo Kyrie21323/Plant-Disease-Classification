@@ -190,7 +190,7 @@ def plot_class_distribution(
     ax.set_xticks(list(x))
     ax.set_xticklabels(short_labels, fontsize=8.5)
     ax.set_ylabel("Number of Images")
-    ax.set_title("Final Subset — Class Distribution: PlantVillage vs PlantDoc",
+    ax.set_title("Final Subset - Class Distribution: PlantVillage vs PlantDoc",
                  fontsize=13, pad=12)
     ax.legend(fontsize=10)
     ax.yaxis.grid(True, linestyle="--", alpha=0.5)
@@ -225,7 +225,7 @@ def plot_sample_grid(
 ) -> None:
     n_rows = len(labels)
     fig = plt.figure(figsize=(n_cols * 3.2, n_rows * 3.0))
-    fig.suptitle(f"{dataset_name} — Sample Images per Class",
+    fig.suptitle(f"{dataset_name} - Sample Images per Class",
                  fontsize=13, y=1.01)
 
     gs = gridspec.GridSpec(n_rows, n_cols, figure=fig,
@@ -287,7 +287,7 @@ def write_eda_summary(
     for lbl in labels:
         pv = pv_counts.get(lbl, 0)
         pd = pd_counts.get(lbl, 0)
-        ratio = f"{pv / pd:.1f}x" if pd > 0 else "—"
+        ratio = f"{pv / pd:.1f}x" if pd > 0 else "-"
         lines.append(f"| {lbl} | {pv} | {pd} | {ratio} |")
 
     lines += [
@@ -311,7 +311,7 @@ def write_eda_summary(
     ]
 
     def stat_row(label, pv_key, pd_key):
-        return f"| {label} | {pv_stats.get(pv_key, '—')} | {pd_stats.get(pd_key, '—')} |"
+        return f"| {label} | {pv_stats.get(pv_key, '-')} | {pd_stats.get(pd_key, '-')} |"
 
     lines += [
         stat_row("Width min (px)",  "width_min",   "width_min"),
@@ -435,8 +435,8 @@ def main() -> None:
         ("height_min",  "Height min (px)"),
         ("height_max",  "Height max (px)"),
     ]:
-        print(f"  {label:<20} {str(pv_stats.get(key, '—')):>14} "
-              f"{str(pd_stats.get(key, '—')):>12}")
+        print(f"  {label:<20} {str(pv_stats.get(key, '-')):>14} "
+              f"{str(pd_stats.get(key, '-')):>12}")
 
     print(f"\n  PlantVillage extensions : {pv_exts}")
     print(f"  PlantDoc extensions     : {pd_exts}")

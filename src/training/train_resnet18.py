@@ -34,7 +34,7 @@ import torch
 import torch.nn as nn
 
 # ---------------------------------------------------------------------------
-# Path setup — allow imports from src/data/, src/models/, src/utils/,
+# Path setup - allow imports from src/data/, src/models/, src/utils/,
 #              and src/training/ (for trainer.py)
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
@@ -63,11 +63,11 @@ for _d in (CHECKPOINTS_DIR, RESULTS_DIR, FIGURES_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# Hyperparameters — edit here for quick experiments
+# Hyperparameters - edit here for quick experiments
 # ---------------------------------------------------------------------------
 NUM_EPOCHS    = 15
 BATCH_SIZE    = 32
-LEARNING_RATE = 1e-4    # Lower than baseline — pretrained weights need gentle updates
+LEARNING_RATE = 1e-4    # Lower than baseline - pretrained weights need gentle updates
 NUM_WORKERS   = 0       # 0 is safest in WSL
 NUM_CLASSES   = 8
 SEED          = 42
@@ -86,7 +86,7 @@ def main() -> None:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\n{'='*60}")
-    print(f"  ResNet-18 Fine-tune — Plant Disease Classification  [{run_tag}]")
+    print(f"  ResNet-18 Fine-tune - Plant Disease Classification  [{run_tag}]")
     print(f"  Device     : {device}")
     print(f"  Epochs     : {NUM_EPOCHS}")
     print(f"  Batch size : {BATCH_SIZE}")
@@ -94,7 +94,7 @@ def main() -> None:
     print(f"{'='*60}\n")
 
     # -----------------------------------------------------------------------
-    # Data — identical loaders to the baseline for a fair comparison
+    # Data - identical loaders to the baseline for a fair comparison
     # -----------------------------------------------------------------------
     print("Loading datasets...")
     _, loaders = build_dataloaders(
@@ -158,7 +158,7 @@ def main() -> None:
         val_losses=history["val_losses"],
         filename=f"resnet18_training_curves_{run_tag}.png",
         figures_dir=FIGURES_DIR,
-        title=f"ResNet-18 Fine-tune — Training Curves ({run_tag})",
+        title=f"ResNet-18 Fine-tune - Training Curves ({run_tag})",
     )
     print(f"Training curve saved  → {curve_path}")
 

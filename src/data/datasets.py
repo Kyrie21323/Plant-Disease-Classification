@@ -78,7 +78,7 @@ class PlantDiseaseDataset(Dataset):
             img.load()
             return img
         except Exception as e:
-            print(f"  [!] Failed to load image: {path} — {e}")
+            print(f"  [!] Failed to load image: {path} - {e}")
             return Image.new("RGB", (224, 224), color=(0, 0, 0))
 
     def class_labels(self) -> list[str]:

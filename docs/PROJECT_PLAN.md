@@ -1,4 +1,4 @@
-# Plant Disease Classification — Project plan (current status)
+# Plant Disease Classification - Project plan (current status)
 
 ## A study of generalization, dataset shift, and possible shortcut learning
 
@@ -35,7 +35,7 @@ each error.
 **Why WSL?** Web-scraped PlantDoc files retain characters valid on Linux but invalid on some
 Windows paths. Storing data under WSL avoids renaming the corpus.
 
-**Repository data products:** `data/metadata/*.csv` and `data/splits/*.csv` — generated from
+**Repository data products:** `data/metadata/*.csv` and `data/splits/*.csv` - generated from
 the above trees, not a copy of the full image corpus inside the repo.
 
 ---
@@ -55,37 +55,37 @@ the above trees, not a copy of the full image corpus inside the repo.
 
 ## 4. Agenda actually executed (chronological, completed)
 
-1. **Setup & class subset** — Download / place datasets in WSL; build **8-class** V1 subset with
+1. **Setup & class subset** - Download / place datasets in WSL; build **8-class** V1 subset with
    unambiguous cross-dataset names; document in
    [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and
    [CLASS_MAPPING.md](CLASS_MAPPING.md); config: [class_subset_v1.json](../configs/class_subset_v1.json).
-2. **Metadata & splits** — `build_subset_metadata` → CSVs; `split_data` → 70/15/15 stratified
+2. **Metadata & splits** - `build_subset_metadata` → CSVs; `split_data` → 70/15/15 stratified
    **PlantVillage** train/val/test; PlantDoc as **separate** eval list (no split in `split_data`’s
    test role for PD training).
-3. **EDA** — Distributions, sample grids, size stats → `outputs/` and
+3. **EDA** - Distributions, sample grids, size stats → `outputs/` and
    [final_subset_eda_summary.md](../outputs/results/final_subset_eda_summary.md).
-4. **Preprocessing** — `src/data/transforms.py`: train vs eval transforms; shared ImageNet
+4. **Preprocessing** - `src/data/transforms.py`: train vs eval transforms; shared ImageNet
    normalization.
-5. **Dataloaders** — `build_dataloaders()`: PV train/val/test + PlantDoc eval loader.
-6. **Initial model training** — Baseline + ResNet training scripts, shared
+5. **Dataloaders** - `build_dataloaders()`: PV train/val/test + PlantDoc eval loader.
+6. **Initial model training** - Baseline + ResNet training scripts, shared
    [trainer.py](../src/training/trainer.py).
-7. **Baseline improvement experiments (PV val only)** — Numbered runs: e.g. lower LR + longer
+7. **Baseline improvement experiments (PV val only)** - Numbered runs: e.g. lower LR + longer
    training, weight decay, dropout 0.3, (optional) strong ColorJitter run rejected. **Run3**
    selected: `outputs/checkpoints/baseline_cnn_best_run3.pt` (best **PV val loss**). ResNet
    **final** checkpoint: `resnet18_best.pt`.
-8. **Final evaluation** — [evaluate_final.py](../src/training/evaluate_final.py): load **final**
+8. **Final evaluation** - [evaluate_final.py](../src/training/evaluate_final.py): load **final**
    checkpoints, evaluate on **PV test** + **PlantDoc**; JSON + confusion matrices. **No
    training.**
-9. **Shortcut / generalization analysis** — Compare gaps, read confusion matrices; document in
+9. **Shortcut / generalization analysis** - Compare gaps, read confusion matrices; document in
    [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md). **Framing: evidence, not proof** of a specific
    spurious feature per error.
-10. **Final reporting** — [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report;
+10. **Final reporting** - [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report;
     this file as **status/plan** reference; [README.md](../README.md) as the **public
     overview**; and the **notebook** [plant_disease_shift_report.ipynb](../notebooks/plant_disease_shift_report.ipynb)
     as a **runnable** walk-through of the same protocol and metrics using **saved** JSON/PNGs
     (by default, no retraining in the notebook).
 
-**Notebook** — The report notebook in `notebooks/plant_disease_shift_report.ipynb` replaces
+**Notebook** - The report notebook in `notebooks/plant_disease_shift_report.ipynb` replaces
 the older “data inspection” draft and mirrors the final write-ups. The **source of truth** for
 numbers remains [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and `outputs/results/*.json`.
 

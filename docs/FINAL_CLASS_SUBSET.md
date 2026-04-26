@@ -1,4 +1,4 @@
-# Final Class Subset — Version 1 (confirmed)
+# Final Class Subset - Version 1 (confirmed)
 
 This document defines the **8-class** Version 1 subset used for **all** training, **PlantVillage
 validation** (tuning), **in-domain test** evaluation, and **final PlantDoc** external analysis
@@ -43,7 +43,7 @@ All eight classes meet every selection criterion in [CLASS_MAPPING.md](CLASS_MAP
   PlantDoc images in the reference mapping).
 
 The same eight classes appear **throughout** final **BaselineCNN (run3)**, **ResNet-18**, and
-**Step 13** evaluation — **PlantDoc** was **not** used to choose this list; the list was fixed
+**Step 13** evaluation - **PlantDoc** was **not** used to choose this list; the list was fixed
 **before** any model selection.
 
 ---
@@ -53,15 +53,15 @@ The same eight classes appear **throughout** final **BaselineCNN (run3)**, **Res
 V1 experiments, tuning, and final reporting are **complete**. A future **V2** could add more
 overlapping classes if desired, for example:
 
-- `Tomato___Leaf_Mold` ↔ `Tomato mold leaf` (85 PlantDoc images — was held back only to keep V1
+- `Tomato___Leaf_Mold` ↔ `Tomato mold leaf` (85 PlantDoc images - was held back only to keep V1
   small)
 - `Potato___Late_blight` ↔ `Potato leaf late blight` (97 PlantDoc images)
 - `Apple___Apple_scab` ↔ `Apple Scab Leaf` (83 PlantDoc images)
 - `Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot` ↔ `Corn Gray leaf spot` (64 PlantDoc
-  images — lower priority)
+  images - lower priority)
 - Revisit ambiguous healthy-class pairs only with manual content verification of PlantDoc
   images.
 
 Any expansion would require new metadata, possible re-split, and a clear **re-run** of the
-training / evaluation **protocol** — it is **optional future work**, not a prerequisite for the
+training / evaluation **protocol** - it is **optional future work**, not a prerequisite for the
 current project deliverables.

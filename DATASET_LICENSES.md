@@ -73,7 +73,7 @@ This project repository is **citation- and documentation-focused**; it does **no
 
 | Dataset      | Used for                                                                 | Used for model selection?           |
 | ------------ | ------------------------------------------------------------------------ | ----------------------------------- |
-| PlantVillage | Training, validation, in-domain test evaluation                        | **Yes** — **validation split only** |
+| PlantVillage | Training, validation, in-domain test evaluation                        | **Yes** - **validation split only** |
 | PlantDoc     | Final external generalization / dataset-shift evaluation                 | **No**                              |
 
 PlantDoc was intentionally **not** used for tuning, checkpoint selection, or label-decision changes. That keeps PlantDoc a **genuine** external stress test for generalization and dataset shift, consistent with the project protocol described in the README and in `docs/PROJECT_PLAN.md`.

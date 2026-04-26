@@ -24,7 +24,7 @@ from data_utils import (
 )
 
 # ---------------------------------------------------------------------------
-# Paths — update if your local layout differs.
+# Paths - update if your local layout differs.
 # ---------------------------------------------------------------------------
 PLANTVILLAGE_DIR = Path.home() / "plantvillage" / "plantvillage_dataset" / "color"
 PLANTDOC_DIR     = Path.home() / "plantdoc" / "train"
