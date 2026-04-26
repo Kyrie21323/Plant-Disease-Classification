@@ -44,6 +44,119 @@ pip-install**:
 - Reading **Markdown / JSON** in a Windows editor is fine, but use **WSL** for executing the
   steps in this section.
 
+### Three reproducibility modes (choose your path)
+
+This project can be used in **three** ways. Pick the one that matches your goal.
+
+#### Mode 1: Saved-results review (no raw data, no checkpoints)
+
+- **You need:** this repository (clone) only.
+- **Read:** this README, [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), tracked
+  [outputs/results/*.json](outputs/results/) and [outputs/figures/*.png](outputs/figures/).
+- **Notebook:** open [notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb) in
+  **saved-results** mode (saved JSON/PNGs; no local images or weights required by default). You
+  cannot re-run a live `evaluate_final.py` from this mode alone.
+- This is the lightest way to **inspect** the reported numbers, figures, and narrative.
+
+#### Mode 2: Reproduce final evaluation *exactly* (recommended) - checkpoint-based
+
+To match the **reported final PlantVillage test vs PlantDoc** metrics without retraining, use the
+**same** `evaluate_final.py` path the project used, with the **final** model weights and the
+**same** data layout (images + `data/` CSVs). **Do not** expect matching final-eval numbers
+from retraining instead of loading these checkpoints, unless you accept small numerical drift
+(Mode 3).
+
+**Why checkpoints are not in Git**
+
+- They are **large binary** model artifacts; keeping them in the main branch would **bloat** the
+  repo and slow clones.
+- **GitHub** repositories stay smaller and easier to share when code + tracked JSON/PNGs are
+  separated from multi-megabyte **`.pt` files**.
+- Checkpoints are **intentionally excluded** by [`.gitignore`](.gitignore) (and policy).
+- If a course or reviewer requires **bit-for-bit** final-evaluation reproduction, the **two**
+  checkpoint files should be **provided separately** (e.g. a **zip** download, a **release
+  asset**, an **LMS** attachment, or a **shared drive** link) - not committed to the default git
+  tree.
+
+**Why checkpoint-based final evaluation is the recommended way to “re-run the numbers”**
+
+- It does **not** force every user to **retrain** two models (expensive and often impractical on
+  CPU-only or shared machines).
+- **Training time** and **GPU** availability differ widely; retraining is not a fair bar for
+  *verification* of the reported Step-13 table.
+- **CUDA**, **PyTorch**, and **hardware** differ across systems; retraining can yield **small**
+  numerical differences even with **fixed random seeds** (dataloader order, non-deterministic
+  ops, etc.).
+- With **fixed checkpoint weights** and **fixed** `data/metadata` + `data/splits` CSVs, running
+  `src/training/evaluate_final.py` is the **cleanest** way to recompute the **same** final
+  PlantVillage / PlantDoc aggregates the write-up is based on (subject to the same images and
+  paths the loaders use).
+
+**What you need for Mode 2**
+
+- **Raw** PlantVillage and PlantDoc in the **expected WSL** paths (see **§3** and **Storing
+  data (WSL)**).
+- **Generated** `data/metadata/*.csv` and `data/splits/*.csv` (from **§3** or a matching build).
+- The **final** checkpoint files (obtained separately from the git repo; names must match what
+  the training/evaluation code expects), typically:
+  - `outputs/checkpoints/baseline_cnn_best_run3.pt`
+  - `outputs/checkpoints/resnet18_best.pt`
+
+**Place provided checkpoints** (if you unzipped a release into `/path/to/checkpoint_release`):
+
+```bash
+cd /path/to/Plant-Disease-Classification
+mkdir -p outputs/checkpoints
+cp /path/to/checkpoint_release/baseline_cnn_best_run3.pt outputs/checkpoints/
+cp /path/to/checkpoint_release/resnet18_best.pt outputs/checkpoints/
+ls -lh outputs/checkpoints
+source "$HOME/.venvs/plant-disease-classification/bin/activate"   # or your venv
+python src/training/evaluate_final.py
+```
+
+(Adjust `cd`, venv, and `cp` source paths. **Protocol:** PlantDoc was used **only** for this
+**final** external pass - **not** for training or hyperparameter choice; see **Dataset
+roles**.)
+
+**Packaging checkpoints for submission (project owner / maintainer)**
+
+If you need to hand off weights for **Mode 2**, from a machine that already has the final
+`outputs/checkpoints/` files, you can build a small zip (checkpoint files **only** - **no** raw
+datasets inside the zip):
+
+```bash
+cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+mkdir -p checkpoint_release
+cp outputs/checkpoints/baseline_cnn_best_run3.pt checkpoint_release/
+cp outputs/checkpoints/resnet18_best.pt checkpoint_release/
+zip -r checkpoints.zip checkpoint_release
+ls -lh checkpoints.zip
+```
+
+- **Do not** add `checkpoints.zip` to git unless your instructor explicitly says to; upload it
+  **separately** when exact final-evaluation reproduction is required.
+- The zip should contain **only** the `.pt` files (or a single folder of them), **not** images.
+
+#### Mode 3: Full training reproduction (retrain, then evaluate)
+
+- **You need:** raw datasets, `data/` CSVs (see **§3**), the venv, and time (often **GPU**).
+- **Run** (from the repo root, venv **active**; adjust venv path if needed):
+
+  ```bash
+  cd /path/to/Plant-Disease-Classification
+  source "$HOME/.venvs/plant-disease-classification/bin/activate"
+  python src/training/train_baseline.py
+  python src/training/train_resnet18.py
+  python src/training/evaluate_final.py
+  ```
+
+- **Expect:** long runtimes, hardware-dependent performance, and the possibility that final
+  metrics **differ slightly** from the **tracked** JSON/PNGs (CUDA/PyTorch versions, ordering,
+  float behavior). The project’s **published** headline numbers in git are the ones in
+  `outputs/results/*.json` and the figures, unless you re-verify after your own run.
+
+---
+
 ### 1. Clone this repository and `cd` into it (WSL)
 
 **If you do not already have a local copy**, get the project with **git** in WSL (install `git`
@@ -170,9 +283,10 @@ The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (
 [docs/CLASS_MAPPING.md](docs/CLASS_MAPPING.md) for what was chosen and
 [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the full order of operations.
 
-1. Set **`REPO_ROOT`** in `src/data/dataloaders.py`, `src/data/build_subset_metadata.py`, and
-   `src/data/split_data.py` to your real clone path if it is not already correct (these files
-   may still point at the author’s path).
+1. If loaders cannot find your `data/splits` and `data/metadata` CSVs, set **`REPO_ROOT`** in
+   `src/data/dataloaders.py` to this clone’s path. The **`build_subset_metadata.py`** and
+   **`split_data.py`** scripts resolve the repo root from the script file location; run them from
+   the same clone after building datasets (see their docstrings).
 2. With the venv **activated**:
    ```bash
    cd /path/to/Plant-Disease-Classification/src/data
@@ -184,53 +298,23 @@ The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (
    script’s module docstring if anything fails. Outputs land under `data/metadata/` and
    `data/splits/`.
 
-### 4. Result JSONs and figure PNGs are in git
+**Tracked results vs local checkpoints:** `outputs/results/*.json` and `outputs/figures/*.png`
+are **in git** for reading without training. **`outputs/checkpoints/*.pt` are not**; see
+**Three reproducibility modes** above (Modes 1-3).
 
-`outputs/results/*.json` and `outputs/figures/*.png` are **versioned** (see `.gitignore`) so
-you can read **final numbers** and static plots without training and without local image
-folders.
+### 4. Report notebook (Jupyter; overlaps Mode 1)
 
-### 5. Checkpoints are not in git
+With the venv **activated** when you use live kernels, or with the right interpreter, open
+[notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb). You can
+re-run on **saved** JSON, figures, and `configs/`; cells that build DataLoaders **warn and
+skip** if split/metadata CSVs or images are missing. For a full **on-disk** final evaluation,
+use **Mode 2** and `evaluate_final.py`.
 
-`outputs/checkpoints/*.pt` is **intentionally not** tracked. To re-run
-`src/training/evaluate_final.py` on real data you need the final **weight files** locally
-(train with `src/training/train_baseline.py` and `src/training/train_resnet18.py`, or obtain
-`.pt` files from a zip or instructor if required). The script **loads** those weights; it does
-**not** download them.
+### 5. Protocol note
 
-### 6. Run final evaluation (after checkpoints and datasets are in place, venv **active**)
-
-```bash
-cd /path/to/Plant-Disease-Classification
-source .venv/bin/activate
-python src/training/evaluate_final.py
-```
-
-Skip the `source` line only if you are not using a venv. See also **How to run final
-evaluation** for a copy-paste WSL path example.
-
-### 7. Report notebook (Jupyter)
-
-With the venv **activated** install is complete; run Jupyter from the same environment, or open
-[notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb) in
-VS Code / Cursor with the `.venv` interpreter selected. You can re-run the notebook on **saved**
-JSON, figures, and `configs/`; cells that build DataLoaders **warn and skip** if split/metadata
-CSVs or images are missing. That is **not** a substitute for a full
-`evaluate_final.py` run on disk.
-
-### 8. What works without local images or checkpoints
-
-Read this README, [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), and browse tracked **JSON** and
-**PNGs**; use the notebook in **saved-results** mode to review the same tables and figures.
-
-### 9. What needs raw data and `.pt` checkpoints
-
-**Retraining** and a **full** `evaluate_final.py` run require **on-disk** images, the usual
-`data/` CSV layout, and local **checkpoints** (it loads saved weights, scores real images, and
-writes under `outputs/`).
-
-**Protocol (unchanged):** PlantVillage **validation** is the **only** basis for Baseline
-tuning/selection; **PlantDoc** is for **final external** evaluation only - not for tuning. See
+**Unchanged protocol:** **PlantVillage validation** is the **only** basis for Baseline
+tuning/selection. **ResNet-18** used fixed initial settings. **PlantDoc** is for **final
+external** evaluation **only** - it was **not** used to train, tune, or select checkpoints. See
 **Dataset roles** below.
 
 ---
@@ -306,6 +390,10 @@ PlantVillage test scores with guaranteed field reliability.
 
 ## How to run final evaluation (no training)
 
+This is **Mode 2** in **Three reproducibility modes** (checkpoint-based final evaluation). You
+need local **checkpoints**, **raw** images in the expected WSL paths, and built **`data/`
+CSVs** - see that section and **Storing data (WSL)**.
+
 From **WSL2 Ubuntu** (Bash), at the **repository root** (adjust `/mnt/c/Users/...` to match
 your user). **Activate the venv first** if you use one (see **Reproducibility** above):
 
@@ -317,13 +405,17 @@ python src/training/evaluate_final.py
 
 This loads the **final** checkpoints, evaluates on **PlantVillage test** and **PlantDoc**,
 writes JSON and confusion-matrix figures under `outputs/`. It does **not** train or change
-weights.
+weights. **Protocol:** PlantDoc is **only** used here as the external eval set, **not** for
+tuning.
 
 ---
 
 ## Training (optional reference)
 
-Tuning the Baseline uses numbered run outputs; see [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md) Section 4.
+This corresponds to **Mode 3** in **Three reproducibility modes** (full training
+reproduction). Tuning the Baseline uses numbered run outputs; see
+[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md) Section 4. **Selection** uses **PlantVillage validation
+only** - **not** PlantDoc.
 
 ```bash
 cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
@@ -333,7 +425,8 @@ python src/training/train_resnet18.py
 ```
 
 Requires the same WSL paths for datasets, an **activated** venv (or equivalent) with
-PyTorch installed, etc.
+PyTorch installed, etc. For exact headline numbers, prefer **Mode 2** (checkpoint
+evaluation) after obtaining or generating the final `.pt` files.
 
 **Regenerating metadata / splits (historical / advanced):** if you need to rebuild CSVs, run
 the scripts from the repo in WSL with `PYTHONPATH` or `cd` to `src/data` as your workflow
