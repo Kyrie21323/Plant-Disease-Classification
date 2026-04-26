@@ -59,8 +59,12 @@ This project can be used in **three** ways. Pick the one that matches your goal.
 #### Mode 1: Saved-results review
 
 - **You need:** this repository (clone) only. **No** raw image datasets and **no** local
-  checkpoints (`.pt` files) are required to **read** what is already tracked in git, including
-  split/metadata CSVs and the JSON/PNG results.
+  checkpoints (`.pt` files) are required to **read** what is already tracked in git.
+- **Not in git (by design):** `data/metadata/*.csv` and `data/splits/*.csv` are **generated
+  locally** and are **ignored** by [`.gitignore`](.gitignore) (`data/*`). A plain clone has
+  `data/.gitkeep` only; do **not** expect split CSVs to appear after `git pull`. The **numbers**
+  in the report are in tracked [outputs/results/*.json](outputs/results/) and this README
+  (see [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), [outputs/figures/*.png](outputs/figures/)).
 - **Read:** this README, [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), tracked
   [outputs/results/*.json](outputs/results/), and [outputs/figures/*.png](outputs/figures/).
 - This is the lightest way to **inspect** the reported numbers, figures, and narrative. It does
@@ -286,20 +290,34 @@ The **8-class** label list, cross-dataset name alignment, and **CSV** metadata (
 **§3** / **Training** sections of this README (plus [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)) for the
 end-to-end pipeline.
 
-1. If loaders cannot find your `data/splits` and `data/metadata` CSVs, set **`REPO_ROOT`** in
-   `src/data/dataloaders.py` to this clone’s path. The **`build_subset_metadata.py`** and
-   **`split_data.py`** scripts resolve the repo root from the script file location; run them from
-   the same clone after building datasets (see their docstrings).
-2. With the venv **activated** (recommended: home venv from **§2**):
+1. **Repo path:** `src/data/dataloaders.py` resolves the repository root from the file location
+   (`REPO_ROOT = Path(__file__)…`). You do **not** need to edit a hardcoded Windows path. Run
+   training/eval scripts from the **repository root** (directory containing `README.md`).
+2. **You must have raw datasets in place** before the two scripts below, at the paths in
+   **`src/data/build_subset_metadata.py`** (defaults: `~/plantvillage/plantvillage_dataset/color`
+   and `~/plantdoc/train`). If you unpack elsewhere, edit **`PLANTVILLAGE_DIR` / `PLANTDOC_DIR`**
+   in that file first, then rebuild.
+3. With the venv **activated** (recommended: home venv from **§2**):
    ```bash
    cd /path/to/Plant-Disease-Classification/src/data
    source "$HOME/.venvs/plant-disease-classification/bin/activate"
    python build_subset_metadata.py
    python split_data.py
    ```
-   Run from **`src/data/`** so `data_utils` imports match the scripts’ module layout. Check each
-   script’s module docstring if anything fails. Outputs land under `data/metadata/` and
-   `data/splits/`.
+   Run from **`src/data/`** so `data_utils` imports match. Outputs land under `data/metadata/`
+   and `data/splits/`.
+
+   **If `~/plantvillage/...` or `~/plantdoc/...` is missing,** the metadata script still writes
+   CSVs, but with **0 image rows** and `split_data.py` then writes **header-only** splits. That
+   is not a “silent success.” Verify **before** `evaluate_final.py`:
+
+   ```bash
+   wc -l data/metadata/plantvillage_subset_metadata.csv
+   wc -l data/splits/plantvillage_train_split.csv
+   ```
+   The train split should have **thousands** of lines (not `1` = header only). You should also
+   see `ls ~/plantvillage/plantvillage_dataset/color` and `ls ~/plantdoc/train` list class
+   folders.
 
    If you created a **project-local** `.venv` under the repo instead (see **§2**), activate it
    with `source ../../.venv/bin/activate` from `src/data/` (or `source .venv/bin/activate` from
@@ -496,11 +514,11 @@ The **primary** walkthrough is **§4** (place checkpoints) and **§5** (run
 **Three reproducibility modes**. You need **all** of: local **`.pt`** files under
 `outputs/checkpoints/`, **raw** images, and **`data/`** CSVs - **not** the checkpoints table alone.
 
-Copy-paste example (WSL, adjust `cd` and venv; use a **local** `source .venv/bin/activate` only
+Copy-paste example (WSL, **replace** `cd` with your clone path; use `source .venv/bin/activate`
 if you use a project-local venv from **§2**):
 
 ```bash
-cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+cd /path/to/Plant-Disease-Classification
 source "$HOME/.venvs/plant-disease-classification/bin/activate"
 python src/training/evaluate_final.py
 ```
@@ -521,22 +539,22 @@ reproduction). Tuning the Baseline uses numbered run outputs; see
 only** - **not** PlantDoc.
 
 ```bash
-cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+cd /path/to/Plant-Disease-Classification
 source "$HOME/.venvs/plant-disease-classification/bin/activate"
 python src/training/train_baseline.py
 python src/training/train_resnet18.py
 ```
 
 (Use `source .venv/bin/activate` from the repo root if you use a project-local **`.venv`** as in
-**§2**.) Requires the same WSL paths for datasets, an **activated** venv (or equivalent) with
-PyTorch installed, etc. For exact headline numbers, prefer **Mode 2** (checkpoint
+**§2**.) Requires the same dataset paths as **§3**, **non-empty** `data/` CSVs, an **activated**
+venv with PyTorch, etc. For exact headline numbers, prefer **Mode 2** (checkpoint
 evaluation) after obtaining or generating the final `.pt` files.
 
-**Regenerating metadata / splits (historical / advanced):** if you need to rebuild CSVs, run
-the scripts from the repo in WSL with `PYTHONPATH` or `cd` to `src/data` as your workflow
-requires; use **§3** above, the `build_subset_metadata.py` and `split_data.py` docstrings, and
-[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md) for the completed pipeline. The project no longer
-requires copying files to `~/` unless you prefer that layout.
+**Regenerating metadata / splits:** use **§3** (`cd` to `src/data`, venv on, then
+`build_subset_metadata.py` and `split_data.py`). The **default** code paths still expect
+PlantVillage and PlantDoc under **`~/plantvillage/...`** and **`~/plantdoc/...`** (or change the
+constants in `build_subset_metadata.py`). There is no separate “optional” layout unless you
+edit those paths yourself.
 
 ---
 
