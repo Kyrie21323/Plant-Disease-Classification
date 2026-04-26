@@ -29,9 +29,9 @@ from datasets import PlantDiseaseDataset
 from transforms import get_train_transform, get_eval_transform
 
 # ---------------------------------------------------------------------------
-# Default paths - all relative to the repo root via /mnt/host/c/...
+# Default paths (repo root = parent of src/)
 # ---------------------------------------------------------------------------
-REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 PV_TRAIN_CSV  = REPO_ROOT / "data" / "splits"   / "plantvillage_train_split.csv"
 PV_VAL_CSV    = REPO_ROOT / "data" / "splits"   / "plantvillage_val_split.csv"

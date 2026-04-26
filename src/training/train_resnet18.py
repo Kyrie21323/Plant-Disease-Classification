@@ -13,8 +13,8 @@ Every run is saved with an auto-incrementing run number so previous results
 are never overwritten.  Run numbers are determined independently for each
 model prefix, so ResNet and baseline counters do not interfere.
 
-Run from the repo root inside WSL:
-    cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+Run from the repository root:
+    cd /path/to/Plant-Disease-Classification
     python src/training/train_resnet18.py
 
 Outputs (written automatically, N = next available run number):
@@ -37,7 +37,7 @@ import torch.nn as nn
 # Path setup - allow imports from src/data/, src/models/, src/utils/,
 #              and src/training/ (for trainer.py)
 # ---------------------------------------------------------------------------
-REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 for _sub in ("src/data", "src/models", "src/utils", "src/training"):
     _p = str(REPO_ROOT / _sub)

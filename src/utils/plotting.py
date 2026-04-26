@@ -15,11 +15,8 @@ import matplotlib  # type: ignore[import]
 matplotlib.use("Agg")   # non-interactive backend - safe for WSL / headless envs
 import matplotlib.pyplot as plt  # type: ignore[import]
 
-# Default output directory (relative to repo root inside WSL).
-FIGURES_DIR = Path(
-    "/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification"
-    "/outputs/figures"
-)
+# Default: outputs/figures/ under the repo root (this file is in src/utils/).
+FIGURES_DIR = Path(__file__).resolve().parent.parent.parent / "outputs" / "figures"
 
 
 def save_training_curves(

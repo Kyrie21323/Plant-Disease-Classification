@@ -11,8 +11,8 @@ Selected checkpoints:
     BaselineCNN  → outputs/checkpoints/baseline_cnn_best_run3.pt  (run3, epoch 22)
     ResNet-18    → outputs/checkpoints/resnet18_best.pt            (original run, epoch 12)
 
-Run from the repo root inside WSL:
-    cd /mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification
+Run from the repository root (any path / WSL or native Linux):
+    cd /path/to/Plant-Disease-Classification
     python src/training/evaluate_final.py
 
 Outputs:
@@ -35,9 +35,9 @@ import torch
 import torch.nn as nn
 
 # ---------------------------------------------------------------------------
-# Path setup
+# Path setup (repo root = parent of src/; works on WSL, Linux, any clone location)
 # ---------------------------------------------------------------------------
-REPO_ROOT = Path("/mnt/c/Users/2028e/Documents/GitHub/Plant-Disease-Classification")
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 for _sub in ("src/data", "src/models", "src/utils", "src/training"):
     _p = str(REPO_ROOT / _sub)
