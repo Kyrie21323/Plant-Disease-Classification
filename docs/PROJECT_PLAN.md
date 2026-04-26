@@ -1,225 +1,99 @@
-# Plant Disease Classification
-## A Study of Shortcut Learning
+# Plant Disease Classification — Project plan (current status)
 
-This project uses deep learning to classify plant diseases from leaf images while examining whether models rely on true disease patterns or shortcut cues such as background and image style. The main experimental focus is how model type and training choices affect generalization across changing visual conditions.
+## A study of generalization, dataset shift, and possible shortcut learning
 
----
+This document describes the **completed** end-to-end workflow: what was done, in what order, and how each dataset split was used. The **code** may evolve; the **protocol** below is the one the reported results follow.
 
-## Current Environment Setup
-
-| Item | Location |
-|---|---|
-| Project code | Windows repository — edited in Cursor, committed with Git as normal |
-| PlantDoc dataset | WSL Linux filesystem (`~/plantdoc`) — stored here because many PlantDoc filenames contain characters (`?`, `%`, `+`) that Windows NTFS forbids |
-| Scripts accessing PlantDoc | Must be run from inside WSL, where the Linux filesystem is accessible |
-| PlantVillage (pending) | Will also be stored in WSL for consistency, unless a clean zip without problematic filenames is used |
-
-**Why WSL?**
-The PlantDoc repository was scraped from the web and retains raw URL-style filenames. These are valid on Linux but cannot be written to a Windows filesystem. Cloning into WSL resolves this cleanly without renaming any files.
-
-**Path convention used in this project:**
-- Dataset paths are configurable constants defined at the top of each script and notebook.
-- They are not assumed to live inside the repository `data/` folder.
-- The actual paths used locally should be documented here and updated as datasets are confirmed.
-
-**Current confirmed dataset paths (local machine):**
-
-| Dataset | Path |
-|---|---|
-| PlantDoc | `~/plantdoc` (WSL) |
-| PlantVillage | Not yet downloaded |
+**Interpretation:** Findings on PlantDoc are **consistent with** dataset shift and **possible** shortcut learning. They do **not** prove that a specific cue (e.g. background only) caused each error.
 
 ---
 
-# Project Build Tasks
+## 1. Project goal (completed)
 
-## 1. Decide the exact datasets and classes
-- Download PlantVillage
-- Download PlantDoc
-- Inspect class names in both datasets
-- Identify only the overlapping disease classes to use
-- Keep the class subset small and realistic at first
-- Define dataset roles clearly:
-  - **PlantVillage** = main training / validation / in-domain test dataset
-  - **PlantDoc** = cross-dataset generalization test dataset
-
-## 2. Collect and organize the data
-- Store raw datasets in a stable location (WSL filesystem or Windows `data/` folder, depending on filename compatibility)
-- Document the actual storage path for each dataset in `PROJECT_PLAN.md` under Current Environment Setup
-- Create a class-name mapping file
-- Document which classes were kept and which were excluded
-- Remove unusable or corrupted images if needed
-- Define dataset paths as configurable constants in scripts and notebooks — do not hardcode absolute paths in logic
-
-## 3. Do initial data inspection
-- Count number of images per class
-- View sample images from each class
-- Check image sizes and formats
-- Check whether classes are imbalanced
-- Compare visual differences between PlantVillage and PlantDoc
-- Summarize why PlantDoc is a reasonable generalization test setting
-
-## 4. Define the exact experiment question
-- Lock the main question:
-  - How do model type and training choices affect generalization in plant disease classification?
-- Lock the interpretation question:
-  - Do cross-dataset failures suggest reliance on shortcut cues such as background, lighting, or image style?
-- Decide the main comparison:
-  - Custom CNN vs fine-tuned pretrained model
-- Decide the main tuning comparisons:
-  - Baseline vs augmentation
-  - Baseline vs regularization
-- Decide the analysis angle:
-  - In-domain performance vs cross-dataset performance
-
-## 5. Prepare preprocessing pipeline
-- Resize images
-- Normalize images
-- Create train / validation / test splits for PlantVillage
-- Prepare PlantDoc as a separate evaluation dataset
-- Create PyTorch dataset classes and dataloaders
-- Define augmentations for controlled experiments
-
-## 6. Build baseline model
-- Implement a small custom CNN
-- Make sure one full training run works end to end
-- Verify metrics, saving, and plotting all work
-
-## 7. Build second model
-- Fine-tune a pretrained model such as ResNet-18
-- Use the same PlantVillage splits for fair comparison
-- Keep the evaluation pipeline identical between models
-
-## 8. Run initial experiments
-- Train both models with initial hyperparameters
-- Save training and validation loss curves
-- Record accuracy, macro-F1, and confusion matrix
-- Compare in-domain PlantVillage test performance first
-
-## 9. Run generalization experiments
-- Test both trained models on PlantDoc
-- Compare how much performance drops from PlantVillage to PlantDoc
-- Identify which model generalizes better under changed visual conditions
-
-## 10. Run improvement experiments
-- Vary learning rate
-- Vary batch size
-- Try augmentation
-- Try dropout / weight decay
-- Compare results systematically
-- Focus especially on which changes improve cross-dataset generalization, not just in-domain accuracy
-
-## 11. Run shortcut-learning analysis
-- Compare which models or training settings degrade more on PlantDoc
-- Inspect whether improvements in augmentation or regularization reduce that degradation
-- Analyze failure cases visually
-- Use the results to discuss whether the model may be relying on shortcut cues
-
-## 12. Do final evaluation
-- Choose best settings for each model
-- Report final PlantVillage test results
-- Report final PlantDoc generalization results
-- Summarize strengths, weaknesses, and failure cases
-- Explain what the results suggest about generalization and shortcut learning
-
-## 13. Prepare presentation materials
-- Problem slide
-- Dataset slide
-- EDA visuals
-- Preprocessing summary
-- Architecture comparison
-- Training curves
-- In-domain vs cross-dataset evaluation
-- Tuning / ablation results
-- Shortcut-learning interpretation
-- Conclusion and future work
+- Train **plant disease** classifiers on **PlantVillage** and compare **in-domain** vs **external** performance on **PlantDoc**.
+- Compare **BaselineCNN** (from scratch) vs **ResNet-18** (ImageNet-pretrained, fine-tuned on PlantVillage).
+- Ask whether good PlantVillage scores **translate** to field-like images and whether large drops on PlantDoc are **compatible with** reliance on **dataset-specific** regularities (shortcut-style hypotheses), without claiming a single mechanistic proof per prediction.
 
 ---
 
-# Notebook Creation Steps
+## 2. Environment and data location (current)
 
-## Cell 1: Project title and brief problem description
-- Title
-- Short paragraph explaining plant disease classification, model comparison, generalization focus, and shortcut-learning interpretation
+| Item | Status |
+| --- | --- |
+| Project code | Git repository (Windows or any clone); run data scripts in **WSL** when using Linux-stored images. |
+| **PlantVillage** | WSL: `~/plantvillage/plantvillage_dataset/color` (or equivalent; metadata CSVs point to absolute paths used at build time). |
+| **PlantDoc** | WSL: `~/plantdoc/train` (many raw filenames use characters **not** allowed on Windows NTFS; data lives on Linux). |
 
-## Cell 2: Imports and setup
-- Import libraries
-- Set random seeds
-- Define dataset paths as configurable path variables (not assumed to be inside `data/`)
-- Define output paths
+**Why WSL?** Web-scraped PlantDoc files retain characters valid on Linux but invalid on some Windows paths. Storing data under WSL avoids renaming the corpus.
 
-## Cell 3: Dataset loading
-- Load PlantVillage metadata
-- Load PlantDoc metadata
-- Print dataset sizes
-- Print discovered class names
+**Repository data products:** `data/metadata/*.csv` and `data/splits/*.csv` — generated from the above trees, not a copy of the full image corpus inside the repo.
 
-## Cell 4: Class mapping and final class selection
-- Show overlapping classes
-- Show final selected classes
-- Explain why only those classes are used
+---
 
-## Cell 5: EDA
-- Class distribution plots
-- Sample images per class
-- Image size statistics
-- Basic comparison of dataset appearance
-- Notes on class imbalance and visual differences
+## 3. Experimental protocol (must stay consistent in write-ups)
 
-## Cell 6: Preprocessing
-- Transforms
-- Normalization
-- Training augmentations
-- Evaluation transforms
+| Stage | Data | Role |
+| --- | --- | --- |
+| **Training** | PlantVillage **train** | Learn parameters for BaselineCNN and ResNet-18. |
+| **Tuning / model selection** | PlantVillage **validation** | **Only** this split was used to select BaselineCNN hyperparameters (numbered runs, best val loss). **PlantDoc not used.** |
+| **In-domain test** | PlantVillage **test** | Final accuracy / F1 on held-out **same-distribution** images. **Not** used to pick hyperparameters. |
+| **External evaluation** | **PlantDoc** (full V1 metadata) | **After** all selection: one-shot **generalization** and **shortcut-style** **analysis**. **Not** used for tuning. |
 
-## Cell 7: DataLoaders
-- PlantVillage train / val / test loaders
-- PlantDoc evaluation loader
+**PlantDoc** is a **final** stress test, not a validation set for model selection.
 
-## Cell 8: Baseline model
-- Define custom CNN
-- Briefly explain architecture
+---
 
-## Cell 9: Training function
-- Training loop
-- Validation loop
-- Metric tracking
-- Model checkpointing
+## 4. Agenda actually executed (chronological, completed)
 
-## Cell 10: Train baseline model
-- Run training
-- Save training curves
-- Report PlantVillage validation / test results
+1. **Setup & class subset** — Download / place datasets in WSL; build **8-class** V1 subset with unambiguous cross-dataset names; document in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and [CLASS_MAPPING.md](CLASS_MAPPING.md); config: [class_subset_v1.json](../configs/class_subset_v1.json).
+2. **Metadata & splits** — `build_subset_metadata` → CSVs; `split_data` → 70/15/15 stratified **PlantVillage** train/val/test; PlantDoc as **separate** eval list (no split in `split_data`’s test role for PD training).
+3. **EDA** — Distributions, sample grids, size stats → `outputs/` and [final_subset_eda_summary.md](../outputs/results/final_subset_eda_summary.md).
+4. **Preprocessing** — `src/data/transforms.py`: train vs eval transforms; shared ImageNet normalization.
+5. **Dataloaders** — `build_dataloaders()`: PV train/val/test + PlantDoc eval loader.
+6. **Initial model training** — Baseline + ResNet training scripts, shared [trainer.py](../src/training/trainer.py).
+7. **Baseline improvement experiments (PV val only)** — Numbered runs: e.g. lower LR + longer training, weight decay, dropout 0.3, (optional) strong ColorJitter run rejected. **Run3** selected: `outputs/checkpoints/baseline_cnn_best_run3.pt` (best **PV val loss**). ResNet **final** checkpoint: `resnet18_best.pt`.
+8. **Final evaluation** — [evaluate_final.py](../src/training/evaluate_final.py): load **final** checkpoints, evaluate on **PV test** + **PlantDoc**; JSON + confusion matrices. **No training.**
+9. **Shortcut / generalization analysis** — Compare gaps, read confusion matrices; document in [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md). **Framing: evidence, not proof** of a specific spurious feature per error.
+10. **Final reporting** — [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report; this file as **status/plan** reference; [README.md](../README.md) as the **public overview**.
 
-## Cell 11: Second model
-- Define / load pretrained model
-- Briefly explain fine-tuning setup
+**Notebook outline** in older revisions of this file may still be useful for teaching; the **source of truth** for numbers is [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and `outputs/results/*.json`.
 
-## Cell 12: Train second model
-- Run training
-- Save training curves
-- Report PlantVillage validation / test results
-- Compare with baseline
+---
 
-## Cell 13: Generalization evaluation
-- Evaluate both models on PlantDoc
-- Compare PlantVillage vs PlantDoc performance
-- Summarize generalization gap
+## 5. Final selected checkpoints and key hyperparameters (Baseline run3)
 
-## Cell 14: Tuning and ablation experiments
-- Compare augmentation settings
-- Compare regularization settings
-- Compare learning rates / batch sizes if included
-- Show which choices help generalization most
+| Item | Value |
+| --- | --- |
+| **Checkpoint** | `outputs/checkpoints/baseline_cnn_best_run3.pt` |
+| Learning rate | `3e-4` |
+| Epochs | `25` |
+| Batch size | `32` |
+| Weight decay | `1e-4` |
+| Dropout (head) | `0.3` |
+| Augmentation (train) | Mild / “original” pipeline at time of selection (not the rejected strong ColorJitter experiment) |
+| ResNet-18 | `outputs/checkpoints/resnet18_best.pt` |
 
-## Cell 15: Shortcut-learning analysis
-- Inspect failure examples
-- Discuss whether performance drops suggest reliance on shortcut cues
-- Relate results back to background, lighting, and image style differences
+---
 
-## Cell 16: Final conclusion
-- What each model learned
-- Which model generalized better
-- What tuning helped most
-- Whether shortcut reliance seems likely
-- Future work
+## 6. Final aggregate results (from evaluation JSON; for convenience)
+
+| Model | PV test acc | PlantDoc acc | Acc gap | PV F1 | PlantDoc F1 | F1 gap |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **Baseline (run3)** | 0.9718 | 0.2330 | 0.7388 | 0.9698 | 0.1865 | 0.7833 |
+| **ResNet-18** | 0.9989 | 0.4000 | 0.5989 | 0.9987 | 0.3202 | 0.6785 |
+
+**Conclusion (high level):** ResNet-18 **transfers** better; **both** show a **large** PlantVillage→PlantDoc gap. See [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) for full narrative.
+
+---
+
+## 7. Future work (optional extensions)
+
+- More field or mixed-domain **training** data.  
+- **Domain adaptation** or self-supervised pretraining on unlabeled field leaves.  
+- **Tighter** leaf crops or segmentation to **reduce** background.  
+- **Additional** external benchmarks beyond PlantDoc.  
+- V2 class expansion (candidates in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md)).
+
+---
+
+*Last aligned with: completed V1 pipeline, WSL paths above, and [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md).*

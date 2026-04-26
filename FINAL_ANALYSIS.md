@@ -26,7 +26,7 @@ The experiment is designed to study:
 ### 2.1 PlantVillage (in-domain)
 
 | Role | Purpose |
-|------|--------|
+| --- | --- |
 | **Train** | Learn class boundaries from 8 selected disease classes. |
 | **Validation** | **Hyperparameter tuning and model selection** (learning rate, weight decay, dropout, augmentation). |
 | **Test** | **In-domain** held-out performance **after** the best settings were fixed — reports how well the model fits PlantVillage-like images it has never seen, but that come from the **same** underlying collection as training. |
@@ -36,7 +36,7 @@ The validation split was used **only** to compare tuning runs. The test split wa
 ### 2.2 PlantDoc (external / cross-dataset)
 
 | Role | Purpose |
-|------|--------|
+| --- | --- |
 | **External evaluation** | **After** the final models were selected using PlantVillage validation, both models were evaluated on PlantDoc **once** to measure **out-of-distribution** performance. |
 | **Shortcut / generalization analysis** | PlantDoc was **never** used for tuning, so it remains a **clean** stress test: any drop here is *not* due to overfitting the external set to a metric. |
 
@@ -78,7 +78,7 @@ Comparing the two therefore measures how well a model **transfers** when the **i
 **Rule:** All tuning and **model selection** used **only** **PlantVillage validation loss** (and associated checkpointing). **PlantDoc** was **not** used. Hyperparameters in `train_baseline.py` and `transforms.py` were adjusted in numbered runs; outputs were preserved as `*_runN.*`.
 
 | Run | What changed (summary) | Best val loss | Best epoch (val) | PV test acc* | PV test macro-F1* |
-|-----|------------------------|--------------|-----------------|----------------|-------------------|
+| --- | --- | ---: | ---: | ---: | ---: |
 | **Original** | 15 epochs, `lr=1e-3`, `dropout=0.5`, `weight_decay=0`, pre–run-number config | 0.1230 | 13 | 0.9611 | 0.9580 |
 | **1** | `lr=3e-4`, 25 epochs; otherwise same as original training recipe | 0.1019 | 23 | 0.9662 | 0.9655 |
 | **2** | + `weight_decay=1e-4` | 0.0943 | 23 | 0.9718 | 0.9717 |
@@ -105,7 +105,7 @@ The script `src/training/evaluate_final.py` loaded the two **final** checkpoints
 ### 5.1 BaselineCNN (run3 checkpoint)
 
 | Metric | Value |
-|--------|------:|
+| --- | ---: |
 | PlantVillage test accuracy | 0.9718 |
 | PlantVillage test macro-F1 | 0.9698 |
 | PlantDoc accuracy | 0.2330 |
@@ -118,7 +118,7 @@ The script `src/training/evaluate_final.py` loaded the two **final** checkpoints
 ### 5.2 ResNet-18 (`resnet18_best.pt`)
 
 | Metric | Value |
-|--------|------:|
+| --- | ---: |
 | PlantVillage test accuracy | 0.9989 |
 | PlantVillage test macro-F1 | 0.9987 |
 | PlantDoc accuracy | 0.4000 |
@@ -131,7 +131,7 @@ The script `src/training/evaluate_final.py` loaded the two **final** checkpoints
 ### 5.3 Final comparison (side by side)
 
 | Model | PV test acc | PlantDoc acc | Accuracy gap | PV F1 | PlantDoc F1 | F1 gap |
-|--------|------------:|-------------:|--------------:|------:|------------:|--------:|
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | **Baseline (run3)** | 0.9718 | 0.2330 | 0.7388 | 0.9698 | 0.1865 | 0.7833 |
 | **ResNet-18** | 0.9989 | 0.4000 | 0.5989 | 0.9987 | 0.3202 | 0.6785 |
 
@@ -141,62 +141,73 @@ The script `src/training/evaluate_final.py` loaded the two **final** checkpoints
 
 ## 6. Figures and visual record
 
-**Relative paths** are from the repository root. Captions are below each image.
+**Relative paths** are from the repository root. The blank line after each image helps GitHub’s Markdown renderer; captions are italic on the line below.
 
 ### 6.1 EDA and dataset context
 
-![Class distribution, 8-class subset](outputs/figures/final_subset_class_distribution.png)  
-*Figure: Class distribution for the 8-class subset (summary also in `outputs/results/final_subset_eda_summary.md` / `docs/FINAL_CLASS_SUBSET.md`).*
+![Class distribution, 8-class subset](outputs/figures/final_subset_class_distribution.png)
 
-![Sample PlantVillage grid](outputs/figures/plantvillage_sample_grid.png)  
+*Figure: Class distribution for the 8-class subset (summary also in `outputs/results/final_subset_eda_summary.md` and `docs/FINAL_CLASS_SUBSET.md`).*
+
+![Sample PlantVillage grid](outputs/figures/plantvillage_sample_grid.png)
+
 *Figure: Example PlantVillage images (laboratory-style, more uniform context).*
 
-![Sample PlantDoc grid](outputs/figures/plantdoc_sample_grid.png)  
+![Sample PlantDoc grid](outputs/figures/plantdoc_sample_grid.png)
+
 *Figure: Example PlantDoc images (more field-like variation).*
 
 *Text summary of sizes and class counts:* `outputs/results/final_subset_eda_summary.md`.
 
-### 6.2 BaselineCNN tuning—training curves (supporting)
+### 6.2 BaselineCNN tuning (training curves, supporting)
 
-![Baseline training curves, original / pre–run number](outputs/figures/baseline_training_curves.png)  
+![Baseline training curves, original / pre–run number](outputs/figures/baseline_training_curves.png)
+
 *Figure: Initial baseline training (pre–run-number file name) — 15 epochs, `lr=1e-3`.*
 
-![Baseline training curves, run 1](outputs/figures/baseline_training_curves_run1.png)  
+![Baseline training curves, run 1](outputs/figures/baseline_training_curves_run1.png)
+
 *Figure: Run 1 — `lr=3e-4`, 25 epochs.*
 
-![Baseline training curves, run 2](outputs/figures/baseline_training_curves_run2.png)  
-*Figure: Run 2 — + weight decay 1e-4.*
+![Baseline training curves, run 2](outputs/figures/baseline_training_curves_run2.png)
 
-![Baseline training curves, run 3 (selected)](outputs/figures/baseline_training_curves_run3.png)  
+*Figure: Run 2 — + weight decay `1e-4`.*
+
+![Baseline training curves, run 3 (selected)](outputs/figures/baseline_training_curves_run3.png)
+
 *Figure: Run 3 — + dropout 0.3; **selected** by best validation loss.*
 
-![Baseline training curves, run 4 (rejected)](outputs/figures/baseline_training_curves_run4.png)  
+![Baseline training curves, run 4 (rejected)](outputs/figures/baseline_training_curves_run4.png)
+
 *Figure: Run 4 — stronger `ColorJitter` (rejected: worse validation).*
 
-**Per-run confusion matrices at end of training** (supporting, not the Step 13 final eval):  
-`outputs/figures/baseline_confusion_matrix.png`, `baseline_confusion_matrix_run1.png` … `run4.png`.
+**Per-run confusion matrices at end of training** (supporting, not the Step 13 final eval): `outputs/figures/baseline_confusion_matrix.png`, `baseline_confusion_matrix_run1.png` through `run4.png`.
 
 ### 6.3 ResNet-18 training (initial run)
 
-![ResNet-18 training curves](outputs/figures/resnet18_training_curves.png)  
+![ResNet-18 training curves](outputs/figures/resnet18_training_curves.png)
+
 *Figure: ResNet-18 fine-tuning on PlantVillage (checkpoint `resnet18_best.pt` used in final eval).*
 
-**Legacy end-of-run confusion (initial training, not Step 13):**  
-`outputs/figures/resnet18_confusion_matrix.png`.
+**Legacy end-of-run confusion (initial training, not Step 13):** `outputs/figures/resnet18_confusion_matrix.png`.
 
 ### 6.4 Final Step 13 confusion matrices (official report figures)
 
-![Baseline — PlantVillage test](outputs/figures/baseline_pv_test_confusion_matrix.png)  
+![Baseline — PlantVillage test](outputs/figures/baseline_pv_test_confusion_matrix.png)
+
 *Figure: **Final** Baseline run3 on **PlantVillage test** (from `evaluate_final.py`).*
 
-![Baseline — PlantDoc](outputs/figures/baseline_plantdoc_confusion_matrix.png)  
-*Figure: **Final** Baseline run3 on **PlantDoc** — note lower diagonal mass (shift).*
+![Baseline — PlantDoc](outputs/figures/baseline_plantdoc_confusion_matrix.png)
 
-![ResNet-18 — PlantVillage test](outputs/figures/resnet18_pv_test_confusion_matrix.png)  
+*Figure: **Final** Baseline run3 on **PlantDoc** — lower diagonal mass (domain shift).*
+
+![ResNet-18 — PlantVillage test](outputs/figures/resnet18_pv_test_confusion_matrix.png)
+
 *Figure: **Final** ResNet-18 on **PlantVillage test**.*
 
-![ResNet-18 — PlantDoc](outputs/figures/resnet18_plantdoc_confusion_matrix.png)  
-*Figure: **Final** ResNet-18 on **PlantDoc** — still many off-diagonal errors despite higher mean accuracy than baseline.*
+![ResNet-18 — PlantDoc](outputs/figures/resnet18_plantdoc_confusion_matrix.png)
+
+*Figure: **Final** ResNet-18 on **PlantDoc** — many off-diagonal errors remain despite higher mean accuracy than the baseline.*
 
 **Class-level cell counts** appear **only** inside these PNGs in the current project layout; they were **not** automatically exported to CSV/JSON in the evaluation script. The **narrative** in Section 7 is based on **visual inspection** of these figures and the **aggregate** metrics above. For a thesis table of **exact** per-class confusion counts, **re-open the PNGs** or **export the confusion matrix to a file** in a future post-processing step.
 
@@ -248,7 +259,7 @@ The script `src/training/evaluate_final.py` loaded the two **final** checkpoints
 ## 10. File index (results and figures used in this document)
 
 | Type | Path |
-|------|------|
+| --- | --- |
 | Final comparison (JSON) | `outputs/results/final_comparison.json` |
 | Baseline final eval (JSON) | `outputs/results/baseline_final_eval.json` |
 | ResNet-18 final eval (JSON) | `outputs/results/resnet18_final_eval.json` |
@@ -263,4 +274,4 @@ The script `src/training/evaluate_final.py` loaded the two **final** checkpoints
 
 ---
 
-*End of `FINAL_ANALYSIS.md` — generated for Step 15 reporting. No training or re-evaluation was performed in producing this file; numbers and paths reflect the current repository as documented above.*
+*End of `FINAL_ANALYSIS.md` — Step 15 reporting. Content and metrics are unchanged from the original report; Markdown tables and figure blocks were reformatted for GitHub preview. No training or re-evaluation was performed in documentation-only updates; numbers and paths reflect the repository at the time of that update.*

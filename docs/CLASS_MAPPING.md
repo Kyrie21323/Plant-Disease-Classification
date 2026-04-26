@@ -1,8 +1,8 @@
 # Class Mapping: PlantVillage ↔ PlantDoc
 
-This document maps class names between the two datasets to identify a usable overlapping subset for cross-dataset generalization experiments.
+This document is the **broad reference** of possible PlantVillage ↔ PlantDoc name alignments. The **final 8-class V1 subset** actually used in training, validation, test, and evaluation is **fixed** in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and [configs/class_subset_v1.json](../configs/class_subset_v1.json). Use that subset document for the exact experimental classes.
 
-Both datasets use different naming conventions for the same plant diseases. This table aligns them manually based on plant species and disease type.
+This table maps class names between the two datasets to identify overlapping classes for cross-dataset generalization experiments. Both collections use different naming conventions for the same plant diseases. Rows are aligned manually by plant species and disease type.
 
 ---
 
@@ -63,21 +63,17 @@ When deciding which overlapping classes to keep for the project, apply the follo
 
 ---
 
-## Recommended Initial Target
+## V1 subset (confirmed — in use)
 
-For the first version of this project, aim for **5–8 overlapping disease classes** with clear, unambiguous mappings and at least 50 PlantDoc images per class.
-
-Based on the table above, the strongest candidates (marked ✓) are:
+The **8-class** Version 1 disease subset was **confirmed** before metadata and split generation. It uses exactly the candidates below (all marked ✓ in the table) with **unambiguous** mappings and **≥ 50** PlantDoc images per class. Full rationale and counts: [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md).
 
 | # | PlantVillage | PlantDoc | PD Count |
-|---|---|---|---|
-| 1 | Tomato___Septoria_leaf_spot | Tomato Septoria leaf spot | 140 |
-| 2 | Corn_(maize)___Northern_Leaf_Blight | Corn leaf blight | 180 |
-| 3 | Squash___Powdery_mildew | Squash Powdery mildew leaf | 124 |
-| 4 | Corn_(maize)___Common_rust_ | Corn rust leaf | 106 |
-| 5 | Tomato___Bacterial_spot | Tomato leaf bacterial spot | 101 |
-| 6 | Tomato___Late_blight | Tomato leaf late blight | 101 |
-| 7 | Potato___Early_blight | Potato leaf early blight | 109 |
-| 8 | Tomato___Early_blight | Tomato Early blight leaf | 79 |
-
-Final class selection should be confirmed before preprocessing begins.
+| --- | --- | --- | ---: |
+| 1 | `Tomato___Septoria_leaf_spot` | Tomato Septoria leaf spot | 140 |
+| 2 | `Corn_(maize)___Northern_Leaf_Blight` | Corn leaf blight | 180 |
+| 3 | `Squash___Powdery_mildew` | Squash Powdery mildew leaf | 124 |
+| 4 | `Corn_(maize)___Common_rust_` | Corn rust leaf | 106 |
+| 5 | `Tomato___Bacterial_spot` | Tomato leaf bacterial spot | 101 |
+| 6 | `Tomato___Late_blight` | Tomato leaf late blight | 101 |
+| 7 | `Potato___Early_blight` | Potato leaf early blight | 109 |
+| 8 | `Tomato___Early_blight` | Tomato Early blight leaf | 79 |
