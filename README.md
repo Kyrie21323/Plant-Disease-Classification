@@ -317,26 +317,51 @@ PlantDoc, or other raw data):
 
 **[https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints)**
 
-Unzip it. Copy the two checkpoint files into **`outputs/checkpoints/`** with these exact names:
+Direct **download** URL for the asset (browser or `wget`):
+
+`https://github.com/Kyrie21323/Plant-Disease-Classification/releases/download/v1.0-checkpoints/checkpoints.zip`
+
+Unzip, then place the two weights under **`outputs/checkpoints/`** with these **exact** names
+(the evaluation script expects them here):
 
 - `outputs/checkpoints/baseline_cnn_best_run3.pt`
 - `outputs/checkpoints/resnet18_best.pt`
 
+Depending on **how the zip was built**, the `.pt` files may extract **directly** into `$HOME` (e.g.
+`/root/…` when you run as root), or into a subfolder such as `$HOME/checkpoint_release/`. If
+neither pattern matches, run `find "$HOME" -maxdepth 3 -name "*.pt"` and copy the two files
+**manually** into `outputs/checkpoints/`.
+
+**Recommended command sequence (handles both common layouts; run from the repo root):**
+
 ```bash
 cd /path/to/Plant-Disease-Classification
 
+wget -O "$HOME/checkpoints.zip" "https://github.com/Kyrie21323/Plant-Disease-Classification/releases/download/v1.0-checkpoints/checkpoints.zip"
+unzip -o "$HOME/checkpoints.zip" -d "$HOME"
+
 mkdir -p outputs/checkpoints
 
-# After downloading and unzipping checkpoints.zip:
-cp /path/to/checkpoint_release/baseline_cnn_best_run3.pt outputs/checkpoints/
-cp /path/to/checkpoint_release/resnet18_best.pt outputs/checkpoints/
+# Case A: zip extracted .pt files directly into $HOME
+if [ -f "$HOME/baseline_cnn_best_run3.pt" ] && [ -f "$HOME/resnet18_best.pt" ]; then
+    cp "$HOME/baseline_cnn_best_run3.pt" outputs/checkpoints/
+    cp "$HOME/resnet18_best.pt" outputs/checkpoints/
+
+# Case B: zip extracted into $HOME/checkpoint_release/
+elif [ -f "$HOME/checkpoint_release/baseline_cnn_best_run3.pt" ] && [ -f "$HOME/checkpoint_release/resnet18_best.pt" ]; then
+    cp "$HOME/checkpoint_release/baseline_cnn_best_run3.pt" outputs/checkpoints/
+    cp "$HOME/checkpoint_release/resnet18_best.pt" outputs/checkpoints/
+
+else
+    echo "Could not find checkpoint files after unzipping."
+    echo "Run: find \"$HOME\" -maxdepth 3 -name '*.pt'"
+fi
 
 ls -lh outputs/checkpoints
 ```
 
-If the zip extracts into a folder named **`checkpoint_release`**, use that path for the `cp`
-sources. If the `.pt` files land somewhere else, replace `/path/to/checkpoint_release` with the
-folder that actually contains the two files.
+(Install `wget` and `unzip` in WSL as needed, e.g. `sudo apt install -y wget unzip`, or
+download `checkpoints.zip` with a browser and adjust paths.)
 
 ### 5. Run final evaluation with checkpoints
 
@@ -380,9 +405,13 @@ follows **§4**-**§5**.
 
 ### 7. Protocol note
 
-**Unchanged protocol:** **PlantVillage validation** is the **only** basis for Baseline
-tuning/selection. **ResNet-18** used fixed initial settings. **PlantDoc** is for **final
-external** evaluation **only** - it was **not** used to train, tune, or select checkpoints. See
+**Unchanged protocol:** **PlantVillage validation** is the **only** basis for **BaselineCNN**
+tuning/selection. The **Baseline** is **not** a single “initial” recipe: it used **multiple**
+numbered runs, and the **final** checkpoint (run3) was **selected** from those runs using PV
+**validation** (best val loss, etc.). **ResNet-18** is different: it was trained with
+**initial** (fixed) hyperparameters, **one** run recipe, and **not** a run-sweep/selection
+process like the Baseline (see **Models compared**). **PlantDoc** is for **final external**
+evaluation **only** - it was **not** used to train, tune, or select checkpoints. See
 **Dataset roles** below.
 
 ---
@@ -392,7 +421,7 @@ external** evaluation **only** - it was **not** used to train, tune, or select c
 | Data split / set | Use |
 | --- | --- |
 | **PlantVillage - train** | Supervised training for both models. |
-| **PlantVillage - validation** | **Only** basis for **hyperparameter tuning and model selection** (Baseline CNN numbered runs: LR, weight decay, dropout, augmentation trials). ResNet-18 was trained with fixed initial settings. |
+| **PlantVillage - validation** | **Only** basis for **hyperparameter tuning and model selection** of **BaselineCNN** (numbered runs: LR, weight decay, dropout, augmentation trials; e.g. run3 **selected** by best val). **ResNet-18** used **initial** (fixed) settings, **not** a multi-run val-based selection like the Baseline. |
 | **PlantVillage - test** | **Final in-domain** held-out evaluation **after** model selection. |
 | **PlantDoc** | **After** all selection: **external** generalization and shortcut-learning **analysis only**. **Not** used for tuning, checkpoint selection, or label decisions. |
 
