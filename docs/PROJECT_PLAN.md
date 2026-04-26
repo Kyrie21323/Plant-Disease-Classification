@@ -2,17 +2,25 @@
 
 ## A study of generalization, dataset shift, and possible shortcut learning
 
-This document describes the **completed** end-to-end workflow: what was done, in what order, and how each dataset split was used. The **code** may evolve; the **protocol** below is the one the reported results follow.
+This document describes the **completed** end-to-end workflow: what was done, in what order, and
+how each dataset split was used. The **code** may evolve; the **protocol** below is the one the
+reported results follow.
 
-**Interpretation:** Findings on PlantDoc are **consistent with** dataset shift and **possible** shortcut learning. They do **not** prove that a specific cue (e.g. background only) caused each error.
+**Interpretation:** Findings on PlantDoc are **consistent with** dataset shift and **possible**
+shortcut learning. They do **not** prove that a specific cue (e.g. background only) caused
+each error.
 
 ---
 
 ## 1. Project goal (completed)
 
-- Train **plant disease** classifiers on **PlantVillage** and compare **in-domain** vs **external** performance on **PlantDoc**.
-- Compare **BaselineCNN** (from scratch) vs **ResNet-18** (ImageNet-pretrained, fine-tuned on PlantVillage).
-- Ask whether good PlantVillage scores **translate** to field-like images and whether large drops on PlantDoc are **compatible with** reliance on **dataset-specific** regularities (shortcut-style hypotheses), without claiming a single mechanistic proof per prediction.
+- Train **plant disease** classifiers on **PlantVillage** and compare **in-domain** vs
+  **external** performance on **PlantDoc**.
+- Compare **BaselineCNN** (from scratch) vs **ResNet-18** (ImageNet-pretrained, fine-tuned on
+  PlantVillage).
+- Ask whether good PlantVillage scores **translate** to field-like images and whether large drops
+  on PlantDoc are **compatible with** reliance on **dataset-specific** regularities
+  (shortcut-style hypotheses), without claiming a single mechanistic proof per prediction.
 
 ---
 
@@ -24,9 +32,11 @@ This document describes the **completed** end-to-end workflow: what was done, in
 | **PlantVillage** | WSL: `~/plantvillage/plantvillage_dataset/color` (or equivalent; metadata CSVs point to absolute paths used at build time). |
 | **PlantDoc** | WSL: `~/plantdoc/train` (many raw filenames use characters **not** allowed on Windows NTFS; data lives on Linux). |
 
-**Why WSL?** Web-scraped PlantDoc files retain characters valid on Linux but invalid on some Windows paths. Storing data under WSL avoids renaming the corpus.
+**Why WSL?** Web-scraped PlantDoc files retain characters valid on Linux but invalid on some
+Windows paths. Storing data under WSL avoids renaming the corpus.
 
-**Repository data products:** `data/metadata/*.csv` and `data/splits/*.csv` — generated from the above trees, not a copy of the full image corpus inside the repo.
+**Repository data products:** `data/metadata/*.csv` and `data/splits/*.csv` — generated from
+the above trees, not a copy of the full image corpus inside the repo.
 
 ---
 
@@ -45,18 +55,37 @@ This document describes the **completed** end-to-end workflow: what was done, in
 
 ## 4. Agenda actually executed (chronological, completed)
 
-1. **Setup & class subset** — Download / place datasets in WSL; build **8-class** V1 subset with unambiguous cross-dataset names; document in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and [CLASS_MAPPING.md](CLASS_MAPPING.md); config: [class_subset_v1.json](../configs/class_subset_v1.json).
-2. **Metadata & splits** — `build_subset_metadata` → CSVs; `split_data` → 70/15/15 stratified **PlantVillage** train/val/test; PlantDoc as **separate** eval list (no split in `split_data`’s test role for PD training).
-3. **EDA** — Distributions, sample grids, size stats → `outputs/` and [final_subset_eda_summary.md](../outputs/results/final_subset_eda_summary.md).
-4. **Preprocessing** — `src/data/transforms.py`: train vs eval transforms; shared ImageNet normalization.
+1. **Setup & class subset** — Download / place datasets in WSL; build **8-class** V1 subset with
+   unambiguous cross-dataset names; document in
+   [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and
+   [CLASS_MAPPING.md](CLASS_MAPPING.md); config: [class_subset_v1.json](../configs/class_subset_v1.json).
+2. **Metadata & splits** — `build_subset_metadata` → CSVs; `split_data` → 70/15/15 stratified
+   **PlantVillage** train/val/test; PlantDoc as **separate** eval list (no split in `split_data`’s
+   test role for PD training).
+3. **EDA** — Distributions, sample grids, size stats → `outputs/` and
+   [final_subset_eda_summary.md](../outputs/results/final_subset_eda_summary.md).
+4. **Preprocessing** — `src/data/transforms.py`: train vs eval transforms; shared ImageNet
+   normalization.
 5. **Dataloaders** — `build_dataloaders()`: PV train/val/test + PlantDoc eval loader.
-6. **Initial model training** — Baseline + ResNet training scripts, shared [trainer.py](../src/training/trainer.py).
-7. **Baseline improvement experiments (PV val only)** — Numbered runs: e.g. lower LR + longer training, weight decay, dropout 0.3, (optional) strong ColorJitter run rejected. **Run3** selected: `outputs/checkpoints/baseline_cnn_best_run3.pt` (best **PV val loss**). ResNet **final** checkpoint: `resnet18_best.pt`.
-8. **Final evaluation** — [evaluate_final.py](../src/training/evaluate_final.py): load **final** checkpoints, evaluate on **PV test** + **PlantDoc**; JSON + confusion matrices. **No training.**
-9. **Shortcut / generalization analysis** — Compare gaps, read confusion matrices; document in [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md). **Framing: evidence, not proof** of a specific spurious feature per error.
-10. **Final reporting** — [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report; this file as **status/plan** reference; [README.md](../README.md) as the **public overview**.
+6. **Initial model training** — Baseline + ResNet training scripts, shared
+   [trainer.py](../src/training/trainer.py).
+7. **Baseline improvement experiments (PV val only)** — Numbered runs: e.g. lower LR + longer
+   training, weight decay, dropout 0.3, (optional) strong ColorJitter run rejected. **Run3**
+   selected: `outputs/checkpoints/baseline_cnn_best_run3.pt` (best **PV val loss**). ResNet
+   **final** checkpoint: `resnet18_best.pt`.
+8. **Final evaluation** — [evaluate_final.py](../src/training/evaluate_final.py): load **final**
+   checkpoints, evaluate on **PV test** + **PlantDoc**; JSON + confusion matrices. **No
+   training.**
+9. **Shortcut / generalization analysis** — Compare gaps, read confusion matrices; document in
+   [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md). **Framing: evidence, not proof** of a specific
+   spurious feature per error.
+10. **Final reporting** — [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report;
+    this file as **status/plan** reference; [README.md](../README.md) as the **public
+    overview**.
 
-**Notebook outline** in older revisions of this file may still be useful for teaching; the **source of truth** for numbers is [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and `outputs/results/*.json`.
+**Notebook outline** in older revisions of this file may still be useful for teaching; the
+**source of truth** for numbers is [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and
+`outputs/results/*.json`.
 
 ---
 
@@ -82,18 +111,20 @@ This document describes the **completed** end-to-end workflow: what was done, in
 | **Baseline (run3)** | 0.9718 | 0.2330 | 0.7388 | 0.9698 | 0.1865 | 0.7833 |
 | **ResNet-18** | 0.9989 | 0.4000 | 0.5989 | 0.9987 | 0.3202 | 0.6785 |
 
-**Conclusion (high level):** ResNet-18 **transfers** better; **both** show a **large** PlantVillage→PlantDoc gap. See [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) for full narrative.
+**Conclusion (high level):** ResNet-18 **transfers** better; **both** show a **large**
+PlantVillage→PlantDoc gap. See [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) for full narrative.
 
 ---
 
 ## 7. Future work (optional extensions)
 
-- More field or mixed-domain **training** data.  
-- **Domain adaptation** or self-supervised pretraining on unlabeled field leaves.  
-- **Tighter** leaf crops or segmentation to **reduce** background.  
-- **Additional** external benchmarks beyond PlantDoc.  
+- More field or mixed-domain **training** data.
+- **Domain adaptation** or self-supervised pretraining on unlabeled field leaves.
+- **Tighter** leaf crops or segmentation to **reduce** background.
+- **Additional** external benchmarks beyond PlantDoc.
 - V2 class expansion (candidates in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md)).
 
 ---
 
-*Last aligned with: completed V1 pipeline, WSL paths above, and [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md).*
+*Last aligned with: completed V1 pipeline, WSL paths above, and
+[FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md).*

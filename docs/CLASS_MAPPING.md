@@ -1,15 +1,21 @@
 # Class Mapping: PlantVillage ↔ PlantDoc
 
-This document is the **broad reference** of possible PlantVillage ↔ PlantDoc name alignments. The **final 8-class V1 subset** actually used in training, validation, test, and evaluation is **fixed** in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and [configs/class_subset_v1.json](../configs/class_subset_v1.json). Use that subset document for the exact experimental classes.
+This document is the **broad reference** of possible PlantVillage ↔ PlantDoc name alignments. The
+**final 8-class V1 subset** actually used in training, validation, test, and evaluation is
+**fixed** in [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md) and
+[configs/class_subset_v1.json](../configs/class_subset_v1.json). Use that subset document for
+the exact experimental classes.
 
-This table maps class names between the two datasets to identify overlapping classes for cross-dataset generalization experiments. Both collections use different naming conventions for the same plant diseases. Rows are aligned manually by plant species and disease type.
+This table maps class names between the two datasets to identify overlapping classes for
+cross-dataset generalization experiments. Both collections use different naming conventions for
+the same plant diseases. Rows are aligned manually by plant species and disease type.
 
 ---
 
 ## Class Mapping Table
 
 | Keep? | PlantVillage Class | PlantDoc Class | Plant | Disease | PV Count | PD Count | Notes |
-|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | ---: | ---: | --- |
 | ✓ | Apple___Apple_scab | Apple Scab Leaf | Apple | Apple scab | 630 | 83 | Clear match |
 | ✗ | Apple___Black_rot | — | Apple | Black rot | 621 | 0 | No PlantDoc equivalent found |
 | ✓ | Apple___Cedar_apple_rust | Apple rust leaf | Apple | Cedar apple rust | 275 | 79 | Clear match |
@@ -55,17 +61,28 @@ This table maps class names between the two datasets to identify overlapping cla
 
 When deciding which overlapping classes to keep for the project, apply the following rules:
 
-- **Same plant and same disease** — the mapping must be unambiguous. If the PlantDoc class name could refer to either a diseased or healthy leaf, exclude it.
-- **Enough PlantDoc images** — aim for at least 50 PlantDoc images per class to make cross-dataset evaluation statistically meaningful. Classes with fewer than 50 should be avoided or flagged.
-- **Avoid ambiguous mappings** — PlantDoc uses generic labels like "Apple leaf" or "Peach leaf" that may contain mixed content. These should not be paired with a specific disease class from PlantVillage unless confirmed otherwise.
-- **Avoid extremely small classes** — classes with very few images in either dataset (e.g. Tomato spider mites with 2 PlantDoc images) should be excluded entirely.
-- **Prefer disease classes over healthy classes** — healthy class labels in PlantDoc are unreliable since the dataset was scraped from web images and class boundaries may not be clean.
+- **Same plant and same disease** — the mapping must be unambiguous. If the PlantDoc class name
+  could refer to either a diseased or healthy leaf, exclude it.
+- **Enough PlantDoc images** — aim for at least 50 PlantDoc images per class to make
+  cross-dataset evaluation statistically meaningful. Classes with fewer than 50 should be
+  avoided or flagged.
+- **Avoid ambiguous mappings** — PlantDoc uses generic labels like "Apple leaf" or "Peach
+  leaf" that may contain mixed content. These should not be paired with a specific disease
+  class from PlantVillage unless confirmed otherwise.
+- **Avoid extremely small classes** — classes with very few images in either dataset (e.g. Tomato
+  spider mites with 2 PlantDoc images) should be excluded entirely.
+- **Prefer disease classes over healthy classes** — healthy class labels in PlantDoc are
+  unreliable since the dataset was scraped from web images and class boundaries may not be
+  clean.
 
 ---
 
 ## V1 subset (confirmed — in use)
 
-The **8-class** Version 1 disease subset was **confirmed** before metadata and split generation. It uses exactly the candidates below (all marked ✓ in the table) with **unambiguous** mappings and **≥ 50** PlantDoc images per class. Full rationale and counts: [FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md).
+The **8-class** Version 1 disease subset was **confirmed** before metadata and split generation.
+It uses exactly the candidates below (all marked ✓ in the table) with **unambiguous** mappings
+and **≥ 50** PlantDoc images per class. Full rationale and counts:
+[FINAL_CLASS_SUBSET.md](FINAL_CLASS_SUBSET.md).
 
 | # | PlantVillage | PlantDoc | PD Count |
 | --- | --- | --- | ---: |
