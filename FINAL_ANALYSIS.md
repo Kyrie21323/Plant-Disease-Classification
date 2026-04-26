@@ -357,8 +357,7 @@ prove a specific cue.”*
 | Baseline run3 | `outputs/results/baseline_results_run3.json` |
 | Baseline run4 | `outputs/results/baseline_results_run4.json` |
 | EDA text summary | `outputs/results/final_subset_eda_summary.md` |
-| Report notebook (optional) | `notebooks/plant_disease_shift_report.ipynb` (same project story using saved results) |
-| Checkpoints (final) | `outputs/checkpoints/baseline_cnn_best_run3.pt`, `outputs/checkpoints/resnet18_best.pt` |
+| Checkpoints (final) | `outputs/checkpoints/baseline_cnn_best_run3.pt`, `outputs/checkpoints/resnet18_best.pt` (not in git; from training or the [v1.0-checkpoints](https://github.com/Kyrie21323/Plant-Disease-Classification/releases/tag/v1.0-checkpoints) Release) |
 | Step 13 figures | `outputs/figures/baseline_*_confusion_matrix.png`, `resnet18_*_confusion_matrix.png` (see **Section 6**) |
 
 ---

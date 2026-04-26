@@ -79,15 +79,14 @@ the above trees, not a copy of the full image corpus inside the repo.
 9. **Shortcut / generalization analysis** - Compare gaps, read confusion matrices; document in
    [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md). **Framing: evidence, not proof** of a specific
    spurious feature per error.
-10. **Final reporting** - [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) as the long-form report;
-    this file as **status/plan** reference; [README.md](../README.md) as the **public
-    overview**; and the **notebook** [plant_disease_shift_report.ipynb](../notebooks/plant_disease_shift_report.ipynb)
-    as a **runnable** walk-through of the same protocol and metrics using **saved** JSON/PNGs
-    (by default, no retraining in the notebook).
-
-**Notebook** - The report notebook in `notebooks/plant_disease_shift_report.ipynb` replaces
-the older “data inspection” draft and mirrors the final write-ups. The **source of truth** for
-numbers remains [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) and `outputs/results/*.json`.
+10. **Final reporting** - [FINAL_ANALYSIS.md](../FINAL_ANALYSIS.md) is the long-form **report**
+    (narrative, interpretation, and figure references). [README.md](../README.md) is the **public
+    overview and reproducibility guide** (modes, WSL, checkpoints, and commands). The
+    **source of truth** for headline **numbers** is `outputs/results/*.json` and the tables in
+    those write-ups, with **visual** results in `outputs/figures/*.png`. **Python** under
+    [src/](../src/) reproduces metadata building, training, and [evaluate_final.py](../src/training/evaluate_final.py).
+    The course may accept either scripts or a Jupyter notebook; this repository is framed around
+    **scripts + Markdown + tracked results**, not a report notebook in git.
 
 ---
 

@@ -19,8 +19,10 @@ specific spurious cue for every error.
 | Document | What it is |
 | --- | --- |
 | **README** (this file) | Quick protocol, results table, and how to run evaluation |
-| **[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)** | Full narrative, all figures, and interpretation |
-| **[notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb)** | Notebook report: protocol, EDA, tuning table, and final metrics from **saved** JSON/PNGs (no training by default) |
+| **[FINAL_ANALYSIS.md](FINAL_ANALYSIS.md)** | Long-form report: narrative, all figures, and interpretation (same story as the tables in `outputs/`) |
+| **[outputs/results/*.json](outputs/results/)** | Tracked metrics (final eval, per-run training, comparison JSON) |
+| **[outputs/figures/*.png](outputs/figures/)** | Tracked curves, confusion matrices, and EDA figures |
+| **Python in [`src/`](src/)** | Data prep, training, and `evaluate_final.py` for reproducible runs |
 | **[DATASET_LICENSES.md](DATASET_LICENSES.md)** | Dataset citations, CC BY 4.0 (PlantDoc) notes, and ownership |
 | **[docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md)** | End-to-end workflow and what was run in order |
 
@@ -46,26 +48,26 @@ pip-install**:
 
 **Suggested order (checkpoint-based final evaluation, the usual “re-run the paper numbers”
 path):** **§1** Clone - **§2** venv and dependencies - **§3** raw datasets and `data/` CSVs -
-**§4** download and place Release checkpoints - **§5** `evaluate_final.py` - **§6** report
-notebook. **You cannot** run **§5** without **local** `.pt` files under `outputs/checkpoints/`
-(they are **not** in git). If you only need to **read** published results, use **Mode 1** below
-or jump to **§6** on saved JSON/PNGs.
+**§4** download and place Release checkpoints - **§5** `evaluate_final.py`. **You cannot** run
+**§5** without **local** `.pt` files under `outputs/checkpoints/` (they are **not** in git). If
+you only need to **read** published results, use **Mode 1** (no raw data, no checkpoints) or
+see **§6** for where the write-up and figures live in the repo.
 
 ### Three reproducibility modes (choose your path)
 
 This project can be used in **three** ways. Pick the one that matches your goal.
 
-#### Mode 1: Saved-results review (no raw data, no checkpoints)
+#### Mode 1: Saved-results review
 
-- **You need:** this repository (clone) only.
+- **You need:** this repository (clone) only. **No** raw image datasets and **no** local
+  checkpoints (`.pt` files) are required to **read** what is already tracked in git, including
+  split/metadata CSVs and the JSON/PNG results.
 - **Read:** this README, [FINAL_ANALYSIS.md](FINAL_ANALYSIS.md), tracked
-  [outputs/results/*.json](outputs/results/) and [outputs/figures/*.png](outputs/figures/).
-- **Notebook:** open [notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb) in
-  **saved-results** mode (saved JSON/PNGs; no local images or weights required by default). You
-  cannot re-run a live `evaluate_final.py` from this mode alone.
-- This is the lightest way to **inspect** the reported numbers, figures, and narrative.
+  [outputs/results/*.json](outputs/results/), and [outputs/figures/*.png](outputs/figures/).
+- This is the lightest way to **inspect** the reported numbers, figures, and narrative. It does
+  **not** recompute metrics on disk; for that, use **Mode 2** or **Mode 3**.
 
-#### Mode 2: Reproduce final evaluation *exactly* (recommended) - checkpoint-based
+#### Mode 2: Final evaluation reproduction with provided checkpoints
 
 To match the **reported final PlantVillage test vs PlantDoc** metrics without retraining, use the
 **same** `evaluate_final.py` path the project used, with the **final** model weights and the
@@ -137,10 +139,12 @@ ls -lh checkpoints.zip
 - The zip should contain **only** the `.pt` files (or a single folder of them), **not** raw
   datasets or images.
 
-#### Mode 3: Full training reproduction (retrain, then evaluate)
+#### Mode 3: Full training reproduction
 
-- **You need:** raw datasets, `data/` CSVs (see **§3**), the venv, and time (often **GPU**).
-- **Run** (from the repo root, venv **active**; adjust venv path if needed):
+- **You need:** **raw** PlantVillage and PlantDoc in the expected WSL locations, **generated**
+  `data/metadata/` and `data/splits/` CSVs (see **§3**), the venv, and time (often **GPU**).
+- **Run** the training scripts, then run final evaluation (from the repo root, venv **active**;
+  adjust venv path if needed):
 
   ```bash
   cd /path/to/Plant-Disease-Classification
@@ -150,9 +154,9 @@ ls -lh checkpoints.zip
   python src/training/evaluate_final.py
   ```
 
-- **Expect:** long runtimes, hardware-dependent performance, and the possibility that final
-  metrics **differ slightly** from the **tracked** JSON/PNGs (CUDA/PyTorch versions, ordering,
-  float behavior). The project’s **published** headline numbers in git are the ones in
+- **Expect:** long runtimes, and that **CPU/GPU, CUDA, and PyTorch build** can produce small
+  numerical **differences** vs the **tracked** JSON/PNGs (ordering, non-deterministic ops, float
+  behavior). The project’s **published** headline numbers in git are the ones in
   `outputs/results/*.json` and the figures, unless you re-verify after your own run.
 
 ---
@@ -233,8 +237,7 @@ python -m pip install -r requirements.txt
 `requirements.txt` pulls in `torch` and `torchvision`. If you need a **CPU-only** or
 **GPU-specific (CUDA)** build, follow the official **PyTorch** install selector at
 [pytorch.org](https://pytorch.org) in **this** environment, then keep using the same
-activated venv for all commands below. Jupyter (for the report notebook) is included in
-`requirements.txt` once installed.
+activated venv for all commands below.
 
 **If `pip` still errors:** delete the broken venv folder, confirm `apt install python3-venv`
 succeeded, recreate the venv on **`$HOME/.venvs/...`**, and run **`python -m pip`** (not
@@ -394,14 +397,15 @@ approximately with:
 
 (See the **Final aggregate results** table later in this README and `outputs/results/*_final_eval.json`.)
 
-### 6. Report notebook (Jupyter)
+### 6. Reading the results (markdown + JSON + figures)
 
-With the venv **activated** when you use live kernels, or with the right interpreter, open
-[notebooks/plant_disease_shift_report.ipynb](notebooks/plant_disease_shift_report.ipynb). You can
-re-run on **saved** JSON, figures, and `configs/`; cells that build DataLoaders **warn and
-skip** if split/metadata CSVs or images are missing. This **saved-results** path does **not**
-require checkpoints for browsing tables from tracked files; a **full** on-disk re-evaluation
-follows **§4**-**§5**.
+The long-form report is [**FINAL_ANALYSIS.md**](FINAL_ANALYSIS.md). For **numeric and visual**
+artifacts, use the tracked files under [outputs/results/](outputs/results/) (JSON) and
+[outputs/figures/](outputs/figures/) (PNGs, including confusion matrices and training curves),
+together with this README and [configs/](configs/) for the class list and split settings. A
+**full** re-evaluation of models on the image disks (recomputing the headline metrics) **requires
+§3** (local raw images and loaders), **§4** (checkpoints from the **Release** if you are not
+training), and **§5**—not the JSON/PNGs alone.
 
 ### 7. Protocol note
 
@@ -573,8 +577,6 @@ them. **`outputs/`** contains checkpoints, training curves, and result JSON. Che
 │   ├── CLASS_MAPPING.md
 │   ├── FINAL_CLASS_SUBSET.md
 │   └── PROJECT_PLAN.md
-├── notebooks/                 # Jupyter
-│   └── plant_disease_shift_report.ipynb
 ├── outputs/                   # By-products of training and evaluation
 │   ├── checkpoints/          # *.pt (ignored; keep local or LFS for sharing weights)
 │   ├── figures/              # Curves, confusion matrices, EDA (PNGs; tracked in git)
@@ -593,7 +595,7 @@ them. **`outputs/`** contains checkpoints, training curves, and result JSON. Che
 | `src/training/evaluate_final.py` | Final eval on **PV test** + **PlantDoc** (after training) |
 | `src/data/dataloaders.py` | Loaders; override CSV paths in code if your data layout differs |
 | `outputs/results/*_final_eval.json` | Step-13 aggregate numbers used in the README table |
-| `notebooks/plant_disease_shift_report.ipynb` | Same story as the reports, in a runnable notebook form |
+| `FINAL_ANALYSIS.md` | Long-form report (narrative + figure references) |
 
 ---
 
