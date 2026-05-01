@@ -1,4 +1,4 @@
-# Plant Disease Classification
+# Plant Disease Dataset Shift Analysis
 
 ## A Study of Generalization, Dataset Shift, and Possible Shortcut Learning
 
